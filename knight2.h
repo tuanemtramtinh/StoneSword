@@ -5,9 +5,15 @@
 
 // #define DEBUG
 
-enum ItemType {/* TODO: */};
-
+class Events;
+class BaseKnight;
+class ArmyKnights;
 class BaseItem;
+class BaseOpponent;
+class BaseBag;
+class KnightAdventure;
+
+enum ItemType {/* TODO: */};
 
 class BaseBag {
 public:
@@ -32,22 +38,14 @@ protected:
 
 public:
     static BaseKnight * create(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI);
-
-    virtual void fight(BaseOpponent * opponent) = 0;
-
     string toString() const;
-};
-
-class Events {
-public:
-    int count() const;
-    int get(int i) const;
 };
 
 class ArmyKnights {
 public:
     ArmyKnights (const string & file_armyknights);
     ~ArmyKnights();
+    bool fight(BaseOpponent * opponent);
     bool adventure (Events * events);
     int count() const;
     BaseKnight * lastKnight() const;
@@ -67,7 +65,13 @@ public:
     virtual void use ( BaseKnight * knight ) = 0;
 };
 
-
+class Events {
+public:
+    Events(const string& file_Events);
+    ~Events();
+    int count() const;
+    int get(int i) const;
+};
 
 class KnightAdventure {
 private:
@@ -78,8 +82,8 @@ public:
     KnightAdventure();
     ~KnightAdventure(); // TODO:
 
-    void loadArmyKnights(const string &);
-    void loadEvents(const string &);
+    void loadArmyKnights(const string & file_armyknights);
+    void loadEvents(const string & file_Events);
     void run();
 };
 
