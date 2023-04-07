@@ -31,6 +31,16 @@ Events::~Events(){
 /* * * END implementation of class BaseBag * * */
 
 /* * * BEGIN implementation of class BaseKnight * * */
+
+void BaseKnight::ArmyDataTransfer(){
+    ArmyKnights x();
+    x.KnightsList;
+}
+
+BaseKnight * BaseKnight::create(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI){
+    return 0;
+}
+
 string BaseKnight::toString() const {
     string typeString[4] = {"PALADIN", "LANCELOT", "DRAGON", "NORMAL"};
     // inefficient version, students can change these code
@@ -51,7 +61,21 @@ string BaseKnight::toString() const {
 
 /* * * BEGIN implementation of class ArmyKnights * * */
 ArmyKnights::ArmyKnights (const string & file_armyknights){
-
+    ifstream infile;
+    infile.open(file_armyknights);
+    string str1, str2;
+    getline(infile, str1);
+    istringstream s1(str1);
+    int n; s1 >> n;
+    KnightsList = new ArmyKnightStatistic[n];
+    for (int i = 0; i < n; i++){
+        infile >> KnightsList[i].HP >> KnightsList[i].phoenixdownI >> KnightsList[i].gil >> KnightsList[i].antidote;
+        KnightsList[i].id = i + 1;
+    }
+    for (int i = 0; i < n; i++){
+        cout << KnightsList[i].id << " " << KnightsList[i].HP << " " << KnightsList[i].phoenixdownI 
+        << " " << KnightsList[i].gil << " " << KnightsList[i].antidote << endl;
+    }
 }
 
 ArmyKnights::~ArmyKnights(){
@@ -108,7 +132,7 @@ KnightAdventure::KnightAdventure() {
 KnightAdventure::~KnightAdventure(){}
 
 void KnightAdventure::loadArmyKnights(const string & file_armyknights){
-    //ArmyKnights x (file_armyknights);
+    ArmyKnights x(file_armyknights);
 }
 
 void KnightAdventure::loadEvents(const string & file_Events){

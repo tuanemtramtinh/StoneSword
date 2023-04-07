@@ -5,6 +5,15 @@
 
 // #define DEBUG
 
+struct ArmyKnightStatistic{
+    int id;
+    int HP;
+    int level;
+    int phoenixdownI;
+    int gil;
+    int antidote;
+};
+
 class Events;
 class BaseKnight;
 class ArmyKnights;
@@ -37,11 +46,14 @@ protected:
     KnightType knightType;
 
 public:
+    void ArmyDataTransfer();
     static BaseKnight * create(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI);
     string toString() const;
 };
 
 class ArmyKnights {
+public:
+    ArmyKnightStatistic * KnightsList;
 public:
     ArmyKnights (const string & file_armyknights);
     ~ArmyKnights();
