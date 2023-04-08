@@ -2,7 +2,11 @@
     "files.associations": {
         "bitset": "cpp",
         "chrono": "cpp",
+<<<<<<< HEAD
         "iosfwd": "cpp",
         "iostream": "cpp"
+=======
+        "iosfwd": "cpp"
+>>>>>>> e1990ccd8795647ddda9c014532bd4f9a003c9b3
     }
 }
