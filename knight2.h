@@ -20,7 +20,7 @@ class BaseKnight;
 class PaladinKnight;
 class LancelotKnight;
 class DragonKnight;
-class NormalKinght;
+class NormalKnight;
 
 class ArmyKnights;
 class BaseItem;
@@ -70,7 +70,33 @@ protected:
 public:
     KnightType getKnightType();
     static BaseKnight * create(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI);
+    int getId(){return this -> id;} int getHP(){return this -> hp;} int getMaxhp(){return this -> maxhp;} int getLevel(){return this -> level;}
+    int getGil(){return this -> gil;} int getAntidote(){return this -> antidote;} int getPhoenixdownI(){return this -> phoenixdownI;}
     string toString() const;
+};
+
+class PaladinKnight : protected BaseKnight{
+public:
+    PaladinKnight(BaseKnight * x);
+    ~PaladinKnight();
+};
+
+class LancelotKnight : protected BaseKnight{
+public:
+    LancelotKnight(BaseKnight * x);
+    ~LancelotKnight();
+};
+
+class DragonKnight : protected BaseKnight{
+public:
+    DragonKnight(BaseKnight * x);
+    ~DragonKnight();
+};
+
+class NormalKnight : protected BaseKnight{
+public:
+    NormalKnight(BaseKnight * x);
+    ~NormalKnight();
 };
 
 class ArmyKnights {
@@ -105,12 +131,15 @@ class Events {
 private:
     int * events;
     int num;
+    int id; //sự kiện thứ i
 
 public:
     Events(const string& file_Events);
     ~Events();
     int count() const;
     int get(int i) const;
+    void substituteID(int x); //Truyền sự kiện thứ i vào biến id
+    int getID();         // Lấy sự kiện thứ i ra khỏi
 };
 
 class KnightAdventure {
