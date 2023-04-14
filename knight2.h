@@ -5,15 +5,6 @@
 
 // #define DEBUG
 
-struct ArmyKnightStatistic{
-    int id;
-    int HP;
-    int level;
-    int phoenixdownI;
-    int gil;
-    int antidote;
-};
-
 class Events;
 
 class BaseKnight;
@@ -75,34 +66,37 @@ public:
     string toString() const;
 };
 
-class PaladinKnight : protected BaseKnight{
+class PaladinKnight : public BaseKnight{
 public:
-    PaladinKnight(BaseKnight * x);
+    PaladinKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI);
     ~PaladinKnight();
 };
 
-class LancelotKnight : protected BaseKnight{
+class LancelotKnight : public BaseKnight{
 public:
-    LancelotKnight(BaseKnight * x);
+    LancelotKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI);
     ~LancelotKnight();
 };
 
-class DragonKnight : protected BaseKnight{
+class DragonKnight : public BaseKnight{
 public:
-    DragonKnight(BaseKnight * x);
+    DragonKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI);
     ~DragonKnight();
 };
 
-class NormalKnight : protected BaseKnight{
+class NormalKnight : public BaseKnight{
 public:
-    NormalKnight(BaseKnight * x);
+    NormalKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI);
     ~NormalKnight();
 };
 
 class ArmyKnights {
 public:
     int cap;
-    ArmyKnightStatistic * KnightsList;
+    int eventsCode;
+    bool paladinShield, lancelotSpear, guinevereHair, excaliburSword = false;
+    BaseKnight ** KnightL1st; // Vì method Create trong class BaseKnight return về địa chỉ
+
 public:
     ArmyKnights (const string & file_armyknights);
     ~ArmyKnights();
@@ -115,6 +109,7 @@ public:
     bool hasLancelotSpear() const;
     bool hasGuinevereHair() const;
     bool hasExcaliburSword() const;
+    void collectArmyItem();
 
     void printInfo() const;
     void printResult(bool win) const;

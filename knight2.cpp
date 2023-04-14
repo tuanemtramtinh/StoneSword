@@ -2,7 +2,7 @@
 
 /* * * BEGIN create Additional Function * * */
 
-bool PrimeCheck(int x){
+bool PaladinCheck(int x){
     if (x == 0 || x == 1) return false;
     for (int i = 2; i <= sqrt(x); i++){
         if (i % 2 == 0) return false;
@@ -27,7 +27,7 @@ bool DragonCheck(int maxHP){
 }
 
 KnightType KnightCheck(int maxHP){
-    if (PrimeCheck(maxHP)) return PALADIN;
+    if (PaladinCheck(maxHP)) return PALADIN;
     if (LancelotCheck(maxHP)) return LANCELOT;
     if (DragonCheck(maxHP)) return DRAGON;
     return NORMAL;
@@ -80,14 +80,24 @@ Events::~Events(){
 /* * * BEGIN implementation of class BaseKnight * * */
 
 BaseKnight * BaseKnight::create(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI){
-    BaseKnight * x = new BaseKnight;
-    x -> id = id;
-    x -> maxhp = maxhp;
-    x -> level = level;
-    x -> gil = gil;
-    x -> antidote = antidote;
-    x -> phoenixdownI = phoenixdownI;
-    x -> knightType = KnightCheck(maxhp);
+    BaseKnight * x = nullptr;
+    if (PaladinCheck(maxhp))
+    {
+        x = new PaladinKnight(id, maxhp, level, gil, antidote, phoenixdownI);
+        x -> knightType = KnightCheck(x -> maxhp);
+    }
+    else if (LancelotCheck(maxhp)){
+        x = new LancelotKnight(id, maxhp, level, gil, antidote, phoenixdownI);
+        x -> knightType = KnightCheck(x -> maxhp);
+    }
+    else if (DragonCheck(maxhp)){
+        x = new DragonKnight(id, maxhp, level, gil, antidote, phoenixdownI);
+        x -> knightType = KnightCheck(x -> maxhp);
+    }
+    else{
+        x = new NormalKnight(id, maxhp, level, gil, antidote, phoenixdownI);
+        x -> knightType = KnightCheck(x -> maxhp);
+    }
     return x;
 }
 
@@ -115,14 +125,13 @@ string BaseKnight::toString() const {
 
 /* * * BEGIN implementation of class PaladinKnight * * */
 
-PaladinKnight::PaladinKnight(BaseKnight * x){
-    this -> id = x -> getId();
-    this -> hp = x -> getHP();
-    this -> maxhp = x -> getMaxhp();
-    this -> level = x -> getLevel();
-    this -> gil = x -> getGil();
-    this -> antidote = x -> getAntidote();
-    this -> phoenixdownI = x -> getPhoenixdownI();
+PaladinKnight::PaladinKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI){
+    this -> id = id;
+    this -> maxhp = maxhp;
+    this -> level = level;
+    this -> gil = gil;
+    this -> antidote = antidote;
+    this -> phoenixdownI = phoenixdownI;
 }
 
 PaladinKnight::~PaladinKnight(){
@@ -133,14 +142,13 @@ PaladinKnight::~PaladinKnight(){
 
 /* * * BEGIN implementation of class LancelotKnight * * */
 
-LancelotKnight::LancelotKnight(BaseKnight * x){
-    this -> id = x -> getId();
-    this -> hp = x -> getHP();
-    this -> maxhp = x -> getMaxhp();
-    this -> level = x -> getLevel();
-    this -> gil = x -> getGil();
-    this -> antidote = x -> getAntidote();
-    this -> phoenixdownI = x -> getPhoenixdownI();
+LancelotKnight::LancelotKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI){
+    this -> id = id;
+    this -> maxhp = maxhp;
+    this -> level = level;
+    this -> gil = gil;
+    this -> antidote = antidote;
+    this -> phoenixdownI = phoenixdownI;
 }
 
 LancelotKnight::~LancelotKnight(){
@@ -151,14 +159,13 @@ LancelotKnight::~LancelotKnight(){
 
 /* * * BEGIN implementation of class DragonKnight * * */
 
-DragonKnight::DragonKnight(BaseKnight * x){
-    this -> id = x -> getId();
-    this -> hp = x -> getHP();
-    this -> maxhp = x -> getMaxhp();
-    this -> level = x -> getLevel();
-    this -> gil = x -> getGil();
-    this -> antidote = x -> getAntidote();
-    this -> phoenixdownI = x -> getPhoenixdownI();
+DragonKnight::DragonKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI){
+    this -> id = id;
+    this -> maxhp = maxhp;
+    this -> level = level;
+    this -> gil = gil;
+    this -> antidote = antidote;
+    this -> phoenixdownI = phoenixdownI;
 }
 
 DragonKnight::~DragonKnight(){
@@ -169,14 +176,13 @@ DragonKnight::~DragonKnight(){
 
 /* * * BEGIN implementation of class NormalKnight * * */
 
-NormalKnight::NormalKnight(BaseKnight * x){
-    this -> id = x -> getId();
-    this -> hp = x -> getHP();
-    this -> maxhp = x -> getMaxhp();
-    this -> level = x -> getLevel();
-    this -> gil = x -> getGil();
-    this -> antidote = x -> getAntidote();
-    this -> phoenixdownI = x -> getPhoenixdownI();
+NormalKnight::NormalKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI){
+    this -> id = id;
+    this -> maxhp = maxhp;
+    this -> level = level;
+    this -> gil = gil;
+    this -> antidote = antidote;
+    this -> phoenixdownI = phoenixdownI;
 }
 
 NormalKnight::~NormalKnight(){
@@ -193,17 +199,17 @@ ArmyKnights::ArmyKnights (const string & file_armyknights){
     getline(infile, str1);
     istringstream s1(str1);
     int n; s1 >> n;
-    
-    KnightsList = new ArmyKnightStatistic[n];
+    KnightL1st = new BaseKnight * [n];
+    int hp, level, phoenixdownI, gil, antidote;
     for (int i = 0; i < n; i++){
-        infile >> KnightsList[i].HP >> KnightsList[i].level >> KnightsList[i].phoenixdownI >> KnightsList[i].gil >> KnightsList[i].antidote;
-        KnightsList[i].id = i + 1;
+        infile >> hp >> level >> phoenixdownI >> gil >> antidote;
+        KnightL1st[i] = BaseKnight::create(i + 1, hp, level, gil, antidote, phoenixdownI);
     }
     cap = n;
 }
 
 ArmyKnights::~ArmyKnights(){
-    delete [] KnightsList;
+    KnightL1st = nullptr;
 };
 
 bool ArmyKnights::adventure(Events * events){
@@ -213,18 +219,59 @@ bool ArmyKnights::adventure(Events * events){
     return false;
 }
 
+void ArmyKnights::collectArmyItem(){
+    if (eventsCode == 95 && paladinShield == 0){
+        hasPaladinShield();
+        paladinShield = 1;
+    }
+    else if (eventsCode == 96 && lancelotSpear == 0){
+        hasLancelotSpear();
+        lancelotSpear = 1;
+    }
+    else if (eventsCode == 97 && guinevereHair == 0){
+        hasGuinevereHair();
+        guinevereHair = 1;
+    }
+    else if (eventsCode == 98 && excaliburSword == 0){
+        hasExcaliburSword();
+        excaliburSword = 1;
+    }
+}
+
 bool ArmyKnights::hasPaladinShield() const{
-    
-    return 0;
+    if (eventsCode == 95 && paladinShield == 0){
+        return true;
+    }
+    else if (eventsCode != 95 && paladinShield == 0){
+        return false;
+    }
 }
+
 bool ArmyKnights::hasLancelotSpear() const{
-    return 0;
+    if (eventsCode == 96 && lancelotSpear == 0){
+        return true;
+    }
+    else if (eventsCode != 96 && lancelotSpear == 0){
+        return false;
+    }
 }
+
 bool ArmyKnights::hasGuinevereHair() const{
-    return 0;
+    if (eventsCode == 97 && guinevereHair == 0){
+        return true;
+    }
+    else if (eventsCode != 97 && guinevereHair == 0){
+        return false;
+    }
 }
+
 bool ArmyKnights::hasExcaliburSword() const{
-    return 0;
+    if (eventsCode == 98 && excaliburSword == 0){
+        return true;
+    }
+    else if (eventsCode != 98 && lancelotSpear == 0){
+        return false;
+    }
 }
 
 BaseKnight * ArmyKnights::lastKnight() const{
@@ -275,34 +322,14 @@ void KnightAdventure::loadEvents(const string & file_Events){
 }
 
 void KnightAdventure::run(){
-    BaseKnight * Knight = new BaseKnight;
-    int n = armyKnights -> cap;
-    Knight = Knight -> create(armyKnights -> KnightsList[n - 1].id, armyKnights -> KnightsList[n - 1].HP, armyKnights -> KnightsList[n - 1].level,
-    armyKnights -> KnightsList[n - 1].gil, armyKnights -> KnightsList[n - 1].antidote, armyKnights -> KnightsList[n - 1].phoenixdownI);
     int num_of_events = events -> count();
-    switch (Knight -> getKnightType())
-    {
-    case 0:
-        PaladinKnight * x = new PaladinKnight(Knight);     
-        break;
-    
-    case 1:
-        LancelotKnight * x = new LancelotKnight(Knight);
-        break;
-    
-    case 2:
-        DragonKnight * x = new DragonKnight(Knight);
-        break;
-
-    default:
-        NormalKnight * x = new NormalKnight(Knight);
-        break;
-    }
     for (int i = 0; i < num_of_events; i++){
-        events -> substituteID(i);
+        events -> substituteID(i); //Lấy thứ tự i của chuỗi events
         armyKnights -> adventure(events);
+        armyKnights -> eventsCode = events -> get(i);
     }
-    delete Knight;
+    
+    //delete Knight;
 }
 
 
