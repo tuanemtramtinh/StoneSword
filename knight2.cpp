@@ -75,6 +75,15 @@ Events::~Events(){
 
 /* * * BEGIN implementation of class BaseBag * * */
 
+bool BaseBag::insertFirst(BaseItem * item){
+
+}
+
+BaseItem* BaseBag::get(ItemType itemType){
+
+}
+
+
 /* * * END implementation of class BaseBag * * */
 
 /* * * BEGIN implementation of class BaseKnight * * */
@@ -115,7 +124,7 @@ string BaseKnight::toString() const {
         + ",maxhp:" + to_string(maxhp)
         + ",level:" + to_string(level)
         + ",gil:" + to_string(gil)
-        + "," + bag->toString()
+        + "," /*+ bag->toString()*/
         + ",knight_type:" + typeString[knightType]
         + "]";
     return s;
@@ -132,6 +141,8 @@ PaladinKnight::PaladinKnight(int id, int maxhp, int level, int gil, int antidote
     this -> gil = gil;
     this -> antidote = antidote;
     this -> phoenixdownI = phoenixdownI;
+    this -> knightType = PALADIN;
+    this -> bag = nullptr;
 }
 
 PaladinKnight::~PaladinKnight(){
@@ -149,6 +160,8 @@ LancelotKnight::LancelotKnight(int id, int maxhp, int level, int gil, int antido
     this -> gil = gil;
     this -> antidote = antidote;
     this -> phoenixdownI = phoenixdownI;
+    this -> knightType = LANCELOT;
+    this -> bag = nullptr;
 }
 
 LancelotKnight::~LancelotKnight(){
@@ -166,6 +179,8 @@ DragonKnight::DragonKnight(int id, int maxhp, int level, int gil, int antidote, 
     this -> gil = gil;
     this -> antidote = antidote;
     this -> phoenixdownI = phoenixdownI;
+    this -> knightType = DRAGON;
+    this -> bag = nullptr;
 }
 
 DragonKnight::~DragonKnight(){
@@ -183,6 +198,8 @@ NormalKnight::NormalKnight(int id, int maxhp, int level, int gil, int antidote, 
     this -> gil = gil;
     this -> antidote = antidote;
     this -> phoenixdownI = phoenixdownI;
+    this -> knightType = NORMAL;
+    this -> bag = nullptr;
 }
 
 NormalKnight::~NormalKnight(){
@@ -215,71 +232,57 @@ ArmyKnights::~ArmyKnights(){
 bool ArmyKnights::adventure(Events * events){
     int num_of_events = events -> count();
     int events_order = events -> getID();
-    if (events_order == num_of_events - 1) return true;
+    if ((this -> fightUltimecia()) == true) return true;
     return false;
 }
 
 void ArmyKnights::collectArmyItem(){
     if (eventsCode == 95 && paladinShield == 0){
-        hasPaladinShield();
         paladinShield = 1;
     }
     else if (eventsCode == 96 && lancelotSpear == 0){
-        hasLancelotSpear();
         lancelotSpear = 1;
     }
     else if (eventsCode == 97 && guinevereHair == 0){
-        hasGuinevereHair();
         guinevereHair = 1;
     }
     else if (eventsCode == 98 && excaliburSword == 0){
-        hasExcaliburSword();
-        excaliburSword = 1;
+        if (paladinShield == true && lancelotSpear == true && guinevereHair == true)
+            excaliburSword = 1;
     }
 }
 
 bool ArmyKnights::hasPaladinShield() const{
-    if (eventsCode == 95 && paladinShield == 0){
-        return true;
-    }
-    else if (eventsCode != 95 && paladinShield == 0){
-        return false;
-    }
+    if (paladinShield == true) return paladinShield;
+    return false;
 }
 
 bool ArmyKnights::hasLancelotSpear() const{
-    if (eventsCode == 96 && lancelotSpear == 0){
-        return true;
-    }
-    else if (eventsCode != 96 && lancelotSpear == 0){
-        return false;
-    }
+    if (lancelotSpear == true) return lancelotSpear;
+    return false;
 }
 
 bool ArmyKnights::hasGuinevereHair() const{
-    if (eventsCode == 97 && guinevereHair == 0){
-        return true;
-    }
-    else if (eventsCode != 97 && guinevereHair == 0){
-        return false;
-    }
+    if (guinevereHair == true) return guinevereHair;
+    return false;
 }
 
 bool ArmyKnights::hasExcaliburSword() const{
-    if (eventsCode == 98 && excaliburSword == 0){
-        return true;
-    }
-    else if (eventsCode != 98 && lancelotSpear == 0){
-        return false;
-    }
+    if (excaliburSword == true) return excaliburSword;
+    return false;
 }
 
 BaseKnight * ArmyKnights::lastKnight() const{
-    return 0;
+    return KnightL1st[cap - 1];
 }
 
 int ArmyKnights::count() const{
     return cap;
+}
+
+bool ArmyKnights::fightUltimecia(){
+    if (excaliburSword == true) return true;
+    return false;
 }
 
 void ArmyKnights::printInfo() const {
@@ -325,8 +328,12 @@ void KnightAdventure::run(){
     int num_of_events = events -> count();
     for (int i = 0; i < num_of_events; i++){
         events -> substituteID(i); //Lấy thứ tự i của chuỗi events
-        armyKnights -> adventure(events);
         armyKnights -> eventsCode = events -> get(i);
+        armyKnights -> collectArmyItem();
+        armyKnights -> printInfo();
+        if (i == num_of_events - 1){
+            armyKnights -> printResult(armyKnights -> adventure(events));
+        }
     }
     
     //delete Knight;

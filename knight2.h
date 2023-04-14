@@ -5,6 +5,8 @@
 
 // #define DEBUG
 
+
+
 class Events;
 
 class BaseKnight;
@@ -32,7 +34,23 @@ class Hades;
 class BaseBag;
 class KnightAdventure;
 
-enum ItemType {/* TODO: */};
+enum ItemType {PhoenixDownI = 0, PhoenixDownII, PhoenixDownIII, PhoenixDownIV};
+
+/********CREATE LINKED LIST********/
+
+struct Node{
+    ItemType data;
+    Node * next;
+};
+
+struct LinkedList{
+    Node * head;
+    Node * tail;
+};
+
+/********CREATE LINKED LIST********/
+
+typedef LinkedList ll;
 
 class BaseBag {
 public:
@@ -100,8 +118,11 @@ public:
 public:
     ArmyKnights (const string & file_armyknights);
     ~ArmyKnights();
+
     bool fight(BaseOpponent * opponent);
     bool adventure (Events * events);
+    bool fightUltimecia();
+
     int count() const;
     BaseKnight * lastKnight() const;
 
@@ -110,6 +131,7 @@ public:
     bool hasGuinevereHair() const;
     bool hasExcaliburSword() const;
     void collectArmyItem();
+
 
     void printInfo() const;
     void printResult(bool win) const;
