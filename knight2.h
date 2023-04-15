@@ -32,9 +32,14 @@ class OmegaWeapon;
 class Hades;
 
 class BaseBag;
+class PaladinBag;
+class LancelotBag;
+class DragonBag;
+class NormalBag;
+
 class KnightAdventure;
 
-enum ItemType {PhoenixDownI = 0, PhoenixDownII, PhoenixDownIII, PhoenixDownIV};
+enum ItemType {PhoenixDownI = 0, PhoenixDownII, PhoenixDownIII, PhoenixDownIV, Antidote};
 
 /********CREATE LINKED LIST********/
 
@@ -48,15 +53,84 @@ struct LinkedList{
     Node * tail;
 };
 
-/********CREATE LINKED LIST********/
-
 typedef LinkedList ll;
+
+/********CREATE LINKED LIST********/
 
 class BaseBag {
 public:
+    ll l;
+    Node * node;
+    string PrintItemList;
+    int num_of_item;
+public:
+    void CreateBagList(){
+        l.head = nullptr;
+        l.tail = nullptr;
+    }
+
+    Node * CreateBagNode(ItemType init_data){
+        Node * node = new Node;
+        node -> data = init_data;
+        node -> next = nullptr;
+        return node;
+    }
+
+    void preInsertFirst(){
+        if (l.head == nullptr){
+            l.head = node;
+            l.tail = nullptr;
+        }
+        else{
+            node -> next = l.head;
+            l.head = node;
+        }
+    }
+
+    void PrintBagList(){
+        string typeString[5] = {"PhoenixI", "PhoenixII", "PhoenixIII", "PhoenixIV", "Antidote"};
+        PrintItemList = "";
+        int count = 0;
+        if (l.head != nullptr){
+            Node * node = l.head;
+            while (node != nullptr){
+                if (count == num_of_item - 1){
+                        PrintItemList = PrintItemList + typeString[node -> data];
+                }
+                else PrintItemList = PrintItemList + typeString[node -> data] + ',';
+                node = node -> next;
+                count++;
+            }
+        }
+    }
+
     virtual bool insertFirst(BaseItem * item);
     virtual BaseItem * get(ItemType itemType);
     virtual string toString() const;
+};
+
+class PaladinBag : public BaseBag{
+public:
+    PaladinBag(BaseKnight * x, int PhoenixDownI, int antidote);
+    ~PaladinBag();
+};
+
+class LancelotBag : public BaseBag{
+public:
+    LancelotBag(BaseKnight * x, int PhoenixDownI, int antidote);
+    ~LancelotBag();
+};
+
+class DragonBag : public BaseBag{
+public:
+    DragonBag(BaseKnight * x, int PhoenixDownI, int antidote);
+    ~DragonBag();
+};
+
+class NormalBag : public BaseBag{
+public:
+    NormalBag(BaseKnight * x, int PhoenixDownI, int antidote);
+    ~NormalBag();
 };
 
 class BaseOpponent;
@@ -79,6 +153,7 @@ protected:
 public:
     KnightType getKnightType();
     static BaseKnight * create(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI);
+    void KnightBagCreate();
     int getId(){return this -> id;} int getHP(){return this -> hp;} int getMaxhp(){return this -> maxhp;} int getLevel(){return this -> level;}
     int getGil(){return this -> gil;} int getAntidote(){return this -> antidote;} int getPhoenixdownI(){return this -> phoenixdownI;}
     string toString() const;

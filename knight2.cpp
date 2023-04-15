@@ -76,11 +76,37 @@ Events::~Events(){
 /* * * BEGIN implementation of class BaseBag * * */
 
 bool BaseBag::insertFirst(BaseItem * item){
-
+    return 0;
 }
 
 BaseItem* BaseBag::get(ItemType itemType){
+    return 0;
+}
 
+
+
+PaladinBag::PaladinBag(BaseKnight * x, int PhoenixDownI, int antidote){
+
+}
+
+LancelotBag::LancelotBag(BaseKnight * x, int PhoenixDownI, int antidote){
+
+}
+
+DragonBag::DragonBag(BaseKnight * x, int PhoenixDownI, int antidote){
+
+}
+
+NormalBag::NormalBag(BaseKnight * x, int PhoenixDownI, int antidote){
+
+}
+
+string BaseBag::toString() const{
+    string typeString[5] = {"PhoenixI", "PhoenixII", "PhoenixIII", "PhoenixIV", "Antidote"};
+    string s("");
+    
+    s = s + "Bag[count=" + to_string(num_of_item) + ";" + PrintItemList + "]";
+    return s;
 }
 
 
@@ -110,6 +136,63 @@ BaseKnight * BaseKnight::create(int id, int maxhp, int level, int gil, int antid
     return x;
 }
 
+void BaseKnight::KnightBagCreate(){
+    if ((this -> knightType) == PALADIN){
+        bag = new PaladinBag(this, phoenixdownI, antidote);
+        bag -> CreateBagList();
+        for (int i = 0; i < phoenixdownI; i++){
+            bag -> node = bag -> CreateBagNode(PhoenixDownI);
+            bag -> preInsertFirst();
+        }
+        for (int i = 0; i < antidote; i++){
+            bag -> node = bag -> CreateBagNode(Antidote);
+            bag -> preInsertFirst();
+        }
+    }
+    else if((this -> knightType) == LANCELOT){
+        bag = new LancelotBag(this, phoenixdownI, antidote);
+        bag -> CreateBagList();
+        for (int i = 0; i < phoenixdownI; i++){
+            bag -> node = bag -> CreateBagNode(PhoenixDownI);
+            bag -> preInsertFirst();
+        }
+        for (int i = 0; i < antidote; i++){
+            bag -> node = bag -> CreateBagNode(Antidote);
+            bag -> preInsertFirst();
+        }
+    }
+    else if ((this -> knightType) == DRAGON){
+        bag = new DragonBag(this, phoenixdownI, antidote);
+        bag -> CreateBagList();
+        for (int i = 0; i < phoenixdownI; i++){
+            bag -> node = bag -> CreateBagNode(PhoenixDownI);
+            bag -> preInsertFirst();
+        }
+        for (int i = 0; i < antidote; i++){
+            bag -> node = bag -> CreateBagNode(Antidote);
+            bag -> preInsertFirst();
+        }
+    }
+    else {
+        bag = new NormalBag(this, phoenixdownI, antidote);
+        bag -> CreateBagList();
+        if (phoenixdownI > 0){
+            for (int i = 0; i < phoenixdownI; i++){
+                bag -> node = bag -> CreateBagNode(PhoenixDownI);
+                bag -> preInsertFirst();
+            }
+        }
+        if (antidote > 0){
+            for (int i = 0; i < antidote; i++){
+                bag -> node = bag -> CreateBagNode(Antidote);
+                bag -> preInsertFirst();
+            }
+        }
+    }
+    bag -> num_of_item = phoenixdownI + antidote;
+    bag -> PrintBagList();
+}
+
 KnightType BaseKnight::getKnightType(){
     return this -> knightType;
 }
@@ -124,7 +207,7 @@ string BaseKnight::toString() const {
         + ",maxhp:" + to_string(maxhp)
         + ",level:" + to_string(level)
         + ",gil:" + to_string(gil)
-        + "," /*+ bag->toString()*/
+        + "," + bag->toString()
         + ",knight_type:" + typeString[knightType]
         + "]";
     return s;
@@ -221,6 +304,7 @@ ArmyKnights::ArmyKnights (const string & file_armyknights){
     for (int i = 0; i < n; i++){
         infile >> hp >> level >> phoenixdownI >> gil >> antidote;
         KnightL1st[i] = BaseKnight::create(i + 1, hp, level, gil, antidote, phoenixdownI);
+        KnightL1st[i] -> KnightBagCreate();
     }
     cap = n;
 }
@@ -319,9 +403,9 @@ void KnightAdventure::loadArmyKnights(const string & file_armyknights){
 
 void KnightAdventure::loadEvents(const string & file_Events){
     events = new Events(file_Events);
-    for (int i = 0; i < events -> count(); i++)
+    /*for (int i = 0; i < events -> count(); i++)
         cout << events -> get(i) << " ";
-    cout << endl;
+    cout << endl;*/
 }
 
 void KnightAdventure::run(){
@@ -331,6 +415,7 @@ void KnightAdventure::run(){
         armyKnights -> eventsCode = events -> get(i);
         armyKnights -> collectArmyItem();
         armyKnights -> printInfo();
+
         if (i == num_of_events - 1){
             armyKnights -> printResult(armyKnights -> adventure(events));
         }
