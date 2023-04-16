@@ -204,6 +204,7 @@ public:
     void KnightBagCreate();
     int getId(){return this -> id;} int getHP(){return this -> hp;} int getMaxhp(){return this -> maxhp;} int getLevel(){return this -> level;}
     int getGil(){return this -> gil;} int getAntidote(){return this -> antidote;} int getPhoenixdownI(){return this -> phoenixdownI;}
+    virtual void fight(BaseOpponent * opponent){}
     string toString() const;
 };
 
@@ -240,7 +241,7 @@ class ArmyKnights {
 public:
     int cap;
     int eventsCode;
-    bool paladinShield, lancelotSpear, guinevereHair, excaliburSword = false;
+    bool paladinShield = false, lancelotSpear = false, guinevereHair = false, excaliburSword = false;
     BaseKnight ** KnightL1st; // Vì method Create trong class BaseKnight return về địa chỉ
 
 public:

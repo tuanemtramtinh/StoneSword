@@ -136,12 +136,11 @@ void BaseOpponent::levelCalculate(int eventsID, int events_order){
 BaseOpponent * BaseOpponent::OpponentCreate(int eventsID, int events_order){
     BaseOpponent * x = nullptr;
     this -> levelO = (events_order + eventsID) % 10 + 1;
-    cout << events_order;
     if (eventsID == 1){
         x = new MadBear();
         x -> levelO = this -> levelO;
     }
-    else if (eventsID == 2){
+    /*else if (eventsID == 2){
         x = new Bandit();
         x -> levelO = this -> levelO;
     }
@@ -156,7 +155,7 @@ BaseOpponent * BaseOpponent::OpponentCreate(int eventsID, int events_order){
     else if (eventsID == 5){
         x = new Troll();
         x -> levelO = this -> levelO;
-    }
+    }*/
     return x;
 }
 
@@ -283,6 +282,10 @@ PaladinKnight::~PaladinKnight(){
 
 }
 
+void PaladinKnight::fight(BaseOpponent * opponent){
+    
+}
+
 /* * * END implementation of class PaladinKnight * * */
 
 /* * * BEGIN implementation of class LancelotKnight * * */
@@ -303,6 +306,10 @@ LancelotKnight::~LancelotKnight(){
 
 }
 
+void LancelotKnight::fight(BaseOpponent * opponent){
+    
+}
+
 /* * * END implementation of class LancelotKnight * * */
 
 /* * * BEGIN implementation of class DragonKnight * * */
@@ -320,6 +327,10 @@ DragonKnight::DragonKnight(int id, int maxhp, int level, int gil, int antidote, 
 }
 
 DragonKnight::~DragonKnight(){
+
+}
+
+void DragonKnight::fight(BaseOpponent * opponent){
 
 }
 
@@ -347,7 +358,10 @@ void NormalKnight::fight(BaseOpponent * opponent){
     if (level < (opponent -> levelO)){
         hp = hp - (opponent -> baseDamage) * ((opponent -> levelO) - level);
     }
-    else level++;
+    else{
+        level++;
+        gil = gil + (opponent -> gilValue);
+    }
 }
 
 /* * * END implementation of class NormalKnight * * */
@@ -426,7 +440,10 @@ int ArmyKnights::count() const{
 }
 
 bool ArmyKnights::fight(BaseOpponent * opponent){
-    
+    BaseKnight * lknight = lastKnight();
+    lknight -> fight(opponent);
+    if ((lknight -> getHP()) > 0) return true;
+    return false;
 }
 
 bool ArmyKnights::fightUltimecia(){
@@ -458,6 +475,7 @@ void ArmyKnights::printResult(bool win) const {
 KnightAdventure::KnightAdventure() {
     armyKnights = nullptr;
     events = nullptr;
+    opponent = nullptr;
 }
 
 KnightAdventure::~KnightAdventure(){}
@@ -475,22 +493,23 @@ void KnightAdventure::loadEvents(const string & file_Events){
 
 void KnightAdventure::run(){
     int num_of_events = events -> count();
-    opponent = nullptr;
+    opponent = new BaseOpponent;
+    BaseOpponent * temp = opponent;
     for (int i = 0; i < num_of_events; i++){
         events -> substituteID(i); //Lấy thứ tự i của chuỗi events
         armyKnights -> eventsCode = events -> get(i); //Lấy mã sự kiện của sự kiện thứ i
         if (((events -> get(i)) >= 1 && (events -> get(i)) <= 7) || ((events -> get(i)) == 10) || ((events -> get(i)) == 11)){
-            opponent -> OpponentCreate(events -> get(i), i);
+            opponent = opponent -> OpponentCreate(events -> get(i), i);
+            armyKnights -> fight(opponent);
         }
-        armyKnights -> fight(opponent);
         armyKnights -> collectArmyItem();
-        /*armyKnights -> printInfo();
+        armyKnights -> printInfo();
         if (i == num_of_events - 1){
             armyKnights -> printResult(armyKnights -> adventure(events));
-        }*/
+        }
     }
     
-    //delete Knight;
+    delete temp;
 }
 
 
