@@ -133,7 +133,55 @@ public:
     ~NormalBag();
 };
 
-class BaseOpponent;
+class BaseOpponent{
+public:
+    int levelO;
+    int baseDamage;
+    int gilValue;
+public:
+    void levelCalculate(int eventsID, int events_order);
+    BaseOpponent * OpponentCreate(int eventsID, int events_order);
+};
+
+class MadBear : public BaseOpponent{
+public:
+    MadBear(){
+        this -> baseDamage = 10;
+        this -> gilValue = 100;
+    };
+};
+
+class Bandit : public BaseOpponent{
+public:
+    Bandit(){
+        this -> baseDamage = 15;
+        this -> gilValue = 150;
+    }
+};
+
+class LordLupin : public BaseOpponent{
+public:
+    LordLupin(){
+        this -> baseDamage = 45;
+        this -> gilValue = 450;
+    }
+};
+
+class Elf : public BaseOpponent{
+public:
+    Elf(){
+        this -> baseDamage = 75;
+        this -> gilValue = 750;
+    }
+};
+
+class Troll : public BaseOpponent{
+public:
+    Troll(){
+        this -> baseDamage = 95;
+        this -> gilValue = 800;
+    }
+};
 
 enum KnightType { PALADIN = 0, LANCELOT, DRAGON, NORMAL };
 
@@ -163,24 +211,29 @@ class PaladinKnight : public BaseKnight{
 public:
     PaladinKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI);
     ~PaladinKnight();
+    void fight(BaseOpponent * opponent);
+
 };
 
 class LancelotKnight : public BaseKnight{
 public:
     LancelotKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI);
     ~LancelotKnight();
+    void fight(BaseOpponent * opponent);
 };
 
 class DragonKnight : public BaseKnight{
 public:
     DragonKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI);
     ~DragonKnight();
+    void fight(BaseOpponent * opponent);
 };
 
 class NormalKnight : public BaseKnight{
 public:
     NormalKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI);
     ~NormalKnight();
+    void fight(BaseOpponent * opponent);
 };
 
 class ArmyKnights {
@@ -197,8 +250,8 @@ public:
     bool fight(BaseOpponent * opponent);
     bool adventure (Events * events);
     bool fightUltimecia();
-
     int count() const;
+
     BaseKnight * lastKnight() const;
 
     bool hasPaladinShield() const;
@@ -238,6 +291,7 @@ class KnightAdventure {
 private:
     ArmyKnights * armyKnights;
     Events * events;
+    BaseOpponent * opponent;
 
 public:
     KnightAdventure();

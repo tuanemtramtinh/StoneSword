@@ -83,23 +83,38 @@ BaseItem* BaseBag::get(ItemType itemType){
     return 0;
 }
 
-
+/* * * BEGIN implementation PaladinBag * * */
 
 PaladinBag::PaladinBag(BaseKnight * x, int PhoenixDownI, int antidote){
 
 }
 
+/* * * END implementation PaladinBag * * */
+
+/* * * BEGIN implementation LancelotBag * * */
+
 LancelotBag::LancelotBag(BaseKnight * x, int PhoenixDownI, int antidote){
 
 }
+
+/* * * END implementation LancelotBag * * */
+
+/* * * BEGIN implementation DragonBag * * */
 
 DragonBag::DragonBag(BaseKnight * x, int PhoenixDownI, int antidote){
 
 }
 
+/* * * END implementation DragonBag * * */
+
+/* * * BEGIN implementation NormalBag * * */
+
 NormalBag::NormalBag(BaseKnight * x, int PhoenixDownI, int antidote){
 
 }
+
+/* * * END implementation NormalBag * * */
+
 
 string BaseBag::toString() const{
     string typeString[5] = {"PhoenixI", "PhoenixII", "PhoenixIII", "PhoenixIV", "Antidote"};
@@ -111,6 +126,41 @@ string BaseBag::toString() const{
 
 
 /* * * END implementation of class BaseBag * * */
+
+/* * * BEGIN implementation of class BaseOpponent * * */
+
+void BaseOpponent::levelCalculate(int eventsID, int events_order){
+    levelO = (events_order + eventsID) % 10 + 1;
+}
+
+BaseOpponent * BaseOpponent::OpponentCreate(int eventsID, int events_order){
+    BaseOpponent * x = nullptr;
+    this -> levelO = (events_order + eventsID) % 10 + 1;
+    cout << events_order;
+    if (eventsID == 1){
+        x = new MadBear();
+        x -> levelO = this -> levelO;
+    }
+    else if (eventsID == 2){
+        x = new Bandit();
+        x -> levelO = this -> levelO;
+    }
+    else if (eventsID == 3){
+        x = new LordLupin();
+        x -> levelO = this -> levelO;
+    }
+    else if (eventsID == 4){
+        x = new Elf();
+        x -> levelO = this -> levelO;
+    }
+    else if (eventsID == 5){
+        x = new Troll();
+        x -> levelO = this -> levelO;
+    }
+    return x;
+}
+
+/* * * END implementation of class BaseOpponent * * */
 
 /* * * BEGIN implementation of class BaseKnight * * */
 
@@ -220,6 +270,7 @@ string BaseKnight::toString() const {
 PaladinKnight::PaladinKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI){
     this -> id = id;
     this -> maxhp = maxhp;
+    this -> hp = maxhp;
     this -> level = level;
     this -> gil = gil;
     this -> antidote = antidote;
@@ -239,6 +290,7 @@ PaladinKnight::~PaladinKnight(){
 LancelotKnight::LancelotKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI){
     this -> id = id;
     this -> maxhp = maxhp;
+    this -> hp = maxhp;
     this -> level = level;
     this -> gil = gil;
     this -> antidote = antidote;
@@ -258,6 +310,7 @@ LancelotKnight::~LancelotKnight(){
 DragonKnight::DragonKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI){
     this -> id = id;
     this -> maxhp = maxhp;
+    this -> hp = maxhp;
     this -> level = level;
     this -> gil = gil;
     this -> antidote = antidote;
@@ -277,6 +330,7 @@ DragonKnight::~DragonKnight(){
 NormalKnight::NormalKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI){
     this -> id = id;
     this -> maxhp = maxhp;
+    this -> hp = maxhp;
     this -> level = level;
     this -> gil = gil;
     this -> antidote = antidote;
@@ -286,7 +340,14 @@ NormalKnight::NormalKnight(int id, int maxhp, int level, int gil, int antidote, 
 }
 
 NormalKnight::~NormalKnight(){
-    
+
+}
+
+void NormalKnight::fight(BaseOpponent * opponent){
+    if (level < (opponent -> levelO)){
+        hp = hp - (opponent -> baseDamage) * ((opponent -> levelO) - level);
+    }
+    else level++;
 }
 
 /* * * END implementation of class NormalKnight * * */
@@ -364,8 +425,12 @@ int ArmyKnights::count() const{
     return cap;
 }
 
+bool ArmyKnights::fight(BaseOpponent * opponent){
+    
+}
+
 bool ArmyKnights::fightUltimecia(){
-    if (excaliburSword == true) return true;
+    if (excaliburSword == true && eventsCode == 99) return true;
     return false;
 }
 
@@ -410,15 +475,19 @@ void KnightAdventure::loadEvents(const string & file_Events){
 
 void KnightAdventure::run(){
     int num_of_events = events -> count();
+    opponent = nullptr;
     for (int i = 0; i < num_of_events; i++){
         events -> substituteID(i); //Lấy thứ tự i của chuỗi events
-        armyKnights -> eventsCode = events -> get(i);
+        armyKnights -> eventsCode = events -> get(i); //Lấy mã sự kiện của sự kiện thứ i
+        if (((events -> get(i)) >= 1 && (events -> get(i)) <= 7) || ((events -> get(i)) == 10) || ((events -> get(i)) == 11)){
+            opponent -> OpponentCreate(events -> get(i), i);
+        }
+        armyKnights -> fight(opponent);
         armyKnights -> collectArmyItem();
-        armyKnights -> printInfo();
-
+        /*armyKnights -> printInfo();
         if (i == num_of_events - 1){
             armyKnights -> printResult(armyKnights -> adventure(events));
-        }
+        }*/
     }
     
     //delete Knight;
