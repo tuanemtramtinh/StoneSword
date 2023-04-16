@@ -16,7 +16,15 @@ class DragonKnight;
 class NormalKnight;
 
 class ArmyKnights;
+
 class BaseItem;
+
+
+class AntidoteItem;
+class PhoenixItemI;
+class PhoenixItemII;
+class PhoenixItemIII;
+class PhoenixItemIV;
 
 class BaseOpponent;
 class MadBear;
@@ -41,10 +49,19 @@ class KnightAdventure;
 
 enum ItemType {PhoenixDownI = 0, PhoenixDownII, PhoenixDownIII, PhoenixDownIV, Antidote};
 
+class BaseItem {
+public:
+    ItemType itemType;
+public:
+    ItemType getItemType();
+    virtual bool canUse ( BaseKnight * knight ) = 0;
+    virtual void use ( BaseKnight * knight ) = 0;
+};
+
 /********CREATE LINKED LIST********/
 
 struct Node{
-    ItemType data;
+    BaseItem * data;
     Node * next;
 };
 
@@ -69,7 +86,7 @@ public:
         l.tail = nullptr;
     }
 
-    Node * CreateBagNode(ItemType init_data){
+    Node * CreateBagNode(BaseItem * init_data){
         Node * node = new Node;
         node -> data = init_data;
         node -> next = nullptr;
@@ -95,9 +112,9 @@ public:
             Node * node = l.head;
             while (node != nullptr){
                 if (count == num_of_item - 1){
-                        PrintItemList = PrintItemList + typeString[node -> data];
+                        PrintItemList = PrintItemList + typeString[node -> data -> itemType];
                 }
-                else PrintItemList = PrintItemList + typeString[node -> data] + ',';
+                else PrintItemList = PrintItemList + typeString[node -> data -> itemType] + ',';
                 node = node -> next;
                 count++;
             }
@@ -254,6 +271,7 @@ public:
     int count() const;
 
     BaseKnight * lastKnight() const;
+    void deleteFaintedLastKnight();
 
     bool hasPaladinShield() const;
     bool hasLancelotSpear() const;
@@ -266,10 +284,40 @@ public:
     void printResult(bool win) const;
 };
 
-class BaseItem {
+class AntidoteItem : public BaseItem{
 public:
-    virtual bool canUse ( BaseKnight * knight ) = 0;
-    virtual void use ( BaseKnight * knight ) = 0;
+    AntidoteItem(){
+        this -> itemType = Antidote;
+    }
+    bool canUse(BaseKnight * knight){return 0;}
+    void use(BaseKnight * knight){}
+};
+
+class PhoenixItemI : public BaseItem{
+public:
+    PhoenixItemI(){
+        this -> itemType = PhoenixDownI;
+    }
+    bool canUse(BaseKnight * knight){return 0;}
+    void use(BaseKnight * knight){}
+};
+
+class PhoenixItemII : public BaseItem{
+    PhoenixItemII(){
+        this -> itemType = PhoenixDownII;
+    }
+};
+
+class PhoenixItemIII : public BaseItem{
+    PhoenixItemIII(){
+        this -> itemType = PhoenixDownIII;
+    }
+};
+
+class PhoenixItemIV : public BaseItem{
+    PhoenixItemIV(){
+        this -> itemType = PhoenixDownIV;
+    }
 };
 
 class Events {

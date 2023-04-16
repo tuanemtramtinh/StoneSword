@@ -83,6 +83,16 @@ BaseItem* BaseBag::get(ItemType itemType){
     return 0;
 }
 
+string BaseBag::toString() const{
+    string typeString[5] = {"PhoenixI", "PhoenixII", "PhoenixIII", "PhoenixIV", "Antidote"};
+    string s("");
+    
+    s = s + "Bag[count=" + to_string(num_of_item) + ";" + PrintItemList + "]";
+    return s;
+}
+
+/* * * END implementation of class BaseBag * * */
+
 /* * * BEGIN implementation PaladinBag * * */
 
 PaladinBag::PaladinBag(BaseKnight * x, int PhoenixDownI, int antidote){
@@ -115,18 +125,6 @@ NormalBag::NormalBag(BaseKnight * x, int PhoenixDownI, int antidote){
 
 /* * * END implementation NormalBag * * */
 
-
-string BaseBag::toString() const{
-    string typeString[5] = {"PhoenixI", "PhoenixII", "PhoenixIII", "PhoenixIV", "Antidote"};
-    string s("");
-    
-    s = s + "Bag[count=" + to_string(num_of_item) + ";" + PrintItemList + "]";
-    return s;
-}
-
-
-/* * * END implementation of class BaseBag * * */
-
 /* * * BEGIN implementation of class BaseOpponent * * */
 
 void BaseOpponent::levelCalculate(int eventsID, int events_order){
@@ -140,7 +138,7 @@ BaseOpponent * BaseOpponent::OpponentCreate(int eventsID, int events_order){
         x = new MadBear();
         x -> levelO = this -> levelO;
     }
-    /*else if (eventsID == 2){
+    else if (eventsID == 2){
         x = new Bandit();
         x -> levelO = this -> levelO;
     }
@@ -155,7 +153,7 @@ BaseOpponent * BaseOpponent::OpponentCreate(int eventsID, int events_order){
     else if (eventsID == 5){
         x = new Troll();
         x -> levelO = this -> levelO;
-    }*/
+    }
     return x;
 }
 
@@ -190,11 +188,13 @@ void BaseKnight::KnightBagCreate(){
         bag = new PaladinBag(this, phoenixdownI, antidote);
         bag -> CreateBagList();
         for (int i = 0; i < phoenixdownI; i++){
-            bag -> node = bag -> CreateBagNode(PhoenixDownI);
+            BaseItem * temp = new PhoenixItemI();
+            bag -> node = bag -> CreateBagNode(temp);
             bag -> preInsertFirst();
         }
         for (int i = 0; i < antidote; i++){
-            bag -> node = bag -> CreateBagNode(Antidote);
+            BaseItem * temp = new AntidoteItem();
+            bag -> node = bag -> CreateBagNode(temp);
             bag -> preInsertFirst();
         }
     }
@@ -202,11 +202,13 @@ void BaseKnight::KnightBagCreate(){
         bag = new LancelotBag(this, phoenixdownI, antidote);
         bag -> CreateBagList();
         for (int i = 0; i < phoenixdownI; i++){
-            bag -> node = bag -> CreateBagNode(PhoenixDownI);
+            BaseItem * temp = new PhoenixItemI();
+            bag -> node = bag -> CreateBagNode(temp);
             bag -> preInsertFirst();
         }
         for (int i = 0; i < antidote; i++){
-            bag -> node = bag -> CreateBagNode(Antidote);
+            BaseItem * temp = new AntidoteItem();
+            bag -> node = bag -> CreateBagNode(temp);
             bag -> preInsertFirst();
         }
     }
@@ -214,28 +216,28 @@ void BaseKnight::KnightBagCreate(){
         bag = new DragonBag(this, phoenixdownI, antidote);
         bag -> CreateBagList();
         for (int i = 0; i < phoenixdownI; i++){
-            bag -> node = bag -> CreateBagNode(PhoenixDownI);
+            BaseItem * temp = new PhoenixItemI();
+            bag -> node = bag -> CreateBagNode(temp);
             bag -> preInsertFirst();
         }
         for (int i = 0; i < antidote; i++){
-            bag -> node = bag -> CreateBagNode(Antidote);
+            BaseItem * temp = new AntidoteItem();
+            bag -> node = bag -> CreateBagNode(temp);
             bag -> preInsertFirst();
         }
     }
     else {
         bag = new NormalBag(this, phoenixdownI, antidote);
         bag -> CreateBagList();
-        if (phoenixdownI > 0){
-            for (int i = 0; i < phoenixdownI; i++){
-                bag -> node = bag -> CreateBagNode(PhoenixDownI);
-                bag -> preInsertFirst();
-            }
+        for (int i = 0; i < phoenixdownI; i++){
+            BaseItem * temp = new PhoenixItemI();
+            bag -> node = bag -> CreateBagNode(temp);
+            bag -> preInsertFirst();
         }
-        if (antidote > 0){
-            for (int i = 0; i < antidote; i++){
-                bag -> node = bag -> CreateBagNode(Antidote);
-                bag -> preInsertFirst();
-            }
+        for (int i = 0; i < antidote; i++){
+            BaseItem * temp = new AntidoteItem();
+            bag -> node = bag -> CreateBagNode(temp);
+            bag -> preInsertFirst();
         }
     }
     bag -> num_of_item = phoenixdownI + antidote;
@@ -388,6 +390,16 @@ ArmyKnights::~ArmyKnights(){
     KnightL1st = nullptr;
 };
 
+void ArmyKnights::deleteFaintedLastKnight(){
+    BaseKnight ** tempKnightList = new BaseKnight* [cap - 1];
+    for (int i = 0; i < cap - 1; i++){
+        tempKnightList[i] = KnightL1st[i];
+    }
+    delete [] KnightL1st;
+    KnightL1st = tempKnightList;
+    cap--;
+}
+
 bool ArmyKnights::adventure(Events * events){
     int num_of_events = events -> count();
     int events_order = events -> getID();
@@ -440,10 +452,15 @@ int ArmyKnights::count() const{
 }
 
 bool ArmyKnights::fight(BaseOpponent * opponent){
-    BaseKnight * lknight = lastKnight();
-    lknight -> fight(opponent);
-    if ((lknight -> getHP()) > 0) return true;
-    return false;
+    for (int i = cap - 1; i >= 0; i--){
+        KnightL1st[i] -> fight(opponent); //Cho hiệp sĩ cuối đánh với quái trước
+        if (KnightL1st[i] -> getHP() <= 0){ 
+            deleteFaintedLastKnight(); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi
+        }
+        else break;
+    }
+    if (cap < 0) return false;
+    return true;
 }
 
 bool ArmyKnights::fightUltimecia(){
@@ -486,9 +503,6 @@ void KnightAdventure::loadArmyKnights(const string & file_armyknights){
 
 void KnightAdventure::loadEvents(const string & file_Events){
     events = new Events(file_Events);
-    /*for (int i = 0; i < events -> count(); i++)
-        cout << events -> get(i) << " ";
-    cout << endl;*/
 }
 
 void KnightAdventure::run(){
