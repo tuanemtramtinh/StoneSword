@@ -62,7 +62,7 @@ public:
     AntidoteItem(){
         this -> itemType = Antidote;
     }
-    BaseItem * get(ItemType itemType){}
+    BaseItem * get(ItemType itemType){return nullptr;}
     bool canUse(BaseKnight * knight){return 0;}
     void use(BaseKnight * knight){}
 };
@@ -72,27 +72,39 @@ public:
     PhoenixItemI(){
         this -> itemType = PhoenixDownI;
     }
-    BaseItem * get(ItemType itemType){}
+    BaseItem * get(ItemType itemType){return nullptr;}
     bool canUse(BaseKnight * knight){return 0;}
     void use(BaseKnight * knight){}
 };
 
 class PhoenixItemII : public BaseItem{
+public:
     PhoenixItemII(){
         this -> itemType = PhoenixDownII;
     }
+    BaseItem * get(ItemType itemType){return nullptr;}
+    bool canUse(BaseKnight * knight){return 0;}
+    void use(BaseKnight * knight){}
 };
 
 class PhoenixItemIII : public BaseItem{
+public:
     PhoenixItemIII(){
         this -> itemType = PhoenixDownIII;
     }
+    BaseItem * get(ItemType itemType){return nullptr;}
+    bool canUse(BaseKnight * knight){return 0;}
+    void use(BaseKnight * knight){}
 };
 
 class PhoenixItemIV : public BaseItem{
+public:
     PhoenixItemIV(){
         this -> itemType = PhoenixDownIV;
     }
+    BaseItem * get(ItemType itemType){return nullptr;}
+    bool canUse(BaseKnight * knight){return 0;}
+    void use(BaseKnight * knight){}
 };
 
 /********CREATE LINKED LIST********/
@@ -156,6 +168,16 @@ public:
                 else PrintItemList = PrintItemList + typeString[node -> data -> itemType] + ',';
                 node = node -> next;
                 count++;
+            }
+        }
+    }
+
+    void PrintBagListTemp(){
+        if (l.head != nullptr){
+            Node * node = l.head;
+            while (node != nullptr){
+                cout << node -> data -> itemType;
+                node = node -> next;
             }
         }
     }
@@ -260,6 +282,13 @@ public:
     void KnightBagCreate();
     int getId(){return this -> id;} int getHP(){return this -> hp;} int getMaxhp(){return this -> maxhp;} int getLevel(){return this -> level;}
     int getGil(){return this -> gil;} int getAntidote(){return this -> antidote;} int getPhoenixdownI(){return this -> phoenixdownI;}
+    BaseBag * getBag(){return this -> bag;}
+    void replaceBag(BaseBag * x){
+        BaseBag * temp = bag;
+        bag = x;
+        delete temp;
+    }
+    void PrintBagTest();
     virtual void fight(BaseOpponent * opponent){}
     string toString() const;
 };
@@ -308,6 +337,7 @@ public:
     bool adventure (Events * events);
     bool fightUltimecia();
     int count() const;
+   
     void UseItem(BaseKnight* Knight);
 
     BaseKnight * lastKnight() const;
@@ -317,7 +347,8 @@ public:
     bool hasLancelotSpear() const;
     bool hasGuinevereHair() const;
     bool hasExcaliburSword() const;
-    void collectArmyItem();
+    void collectPhoenix(); //Dùng để nhặt cho sự kiện từ 112 -> 114
+    void collectArmyItem(); //Dùng để nhặt các báu vật
 
 
     void printInfo() const;
