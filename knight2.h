@@ -53,9 +53,46 @@ class BaseItem {
 public:
     ItemType itemType;
 public:
-    ItemType getItemType();
     virtual bool canUse ( BaseKnight * knight ) = 0;
     virtual void use ( BaseKnight * knight ) = 0;
+};
+
+class AntidoteItem : public BaseItem{
+public:
+    AntidoteItem(){
+        this -> itemType = Antidote;
+    }
+    BaseItem * get(ItemType itemType){}
+    bool canUse(BaseKnight * knight){return 0;}
+    void use(BaseKnight * knight){}
+};
+
+class PhoenixItemI : public BaseItem{
+public:
+    PhoenixItemI(){
+        this -> itemType = PhoenixDownI;
+    }
+    BaseItem * get(ItemType itemType){}
+    bool canUse(BaseKnight * knight){return 0;}
+    void use(BaseKnight * knight){}
+};
+
+class PhoenixItemII : public BaseItem{
+    PhoenixItemII(){
+        this -> itemType = PhoenixDownII;
+    }
+};
+
+class PhoenixItemIII : public BaseItem{
+    PhoenixItemIII(){
+        this -> itemType = PhoenixDownIII;
+    }
+};
+
+class PhoenixItemIV : public BaseItem{
+    PhoenixItemIV(){
+        this -> itemType = PhoenixDownIV;
+    }
 };
 
 /********CREATE LINKED LIST********/
@@ -103,6 +140,8 @@ public:
             l.head = node;
         }
     }
+
+    Node * FindItem(BaseItem * item);
 
     void PrintBagList(){
         string typeString[5] = {"PhoenixI", "PhoenixII", "PhoenixIII", "PhoenixIV", "Antidote"};
@@ -269,6 +308,7 @@ public:
     bool adventure (Events * events);
     bool fightUltimecia();
     int count() const;
+    void UseItem(BaseKnight* Knight);
 
     BaseKnight * lastKnight() const;
     void deleteFaintedLastKnight();
@@ -284,41 +324,7 @@ public:
     void printResult(bool win) const;
 };
 
-class AntidoteItem : public BaseItem{
-public:
-    AntidoteItem(){
-        this -> itemType = Antidote;
-    }
-    bool canUse(BaseKnight * knight){return 0;}
-    void use(BaseKnight * knight){}
-};
 
-class PhoenixItemI : public BaseItem{
-public:
-    PhoenixItemI(){
-        this -> itemType = PhoenixDownI;
-    }
-    bool canUse(BaseKnight * knight){return 0;}
-    void use(BaseKnight * knight){}
-};
-
-class PhoenixItemII : public BaseItem{
-    PhoenixItemII(){
-        this -> itemType = PhoenixDownII;
-    }
-};
-
-class PhoenixItemIII : public BaseItem{
-    PhoenixItemIII(){
-        this -> itemType = PhoenixDownIII;
-    }
-};
-
-class PhoenixItemIV : public BaseItem{
-    PhoenixItemIV(){
-        this -> itemType = PhoenixDownIV;
-    }
-};
 
 class Events {
 

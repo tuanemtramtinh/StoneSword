@@ -73,15 +73,37 @@ Events::~Events(){
 
 /* * * END implementation of class Events * * */
 
+/* * * BEGIN implementation of class BaseItem * * */
+
+/* * * END implementation of class BaseItem * * */
+
 /* * * BEGIN implementation of class BaseBag * * */
 
 bool BaseBag::insertFirst(BaseItem * item){
-    return 0;
+    this -> node = CreateBagNode(item);
+    if (l.head != nullptr){
+        l.head = this -> node;
+        l.tail = this -> node;
+    }
+    else{
+        node -> next = l.head;
+        l.head = node;
+    }
+}
+
+Node * BaseBag::FindItem(BaseItem * item){
+    Node * node = l.head;
+    while ((node -> data -> itemType) != (item -> itemType) && node != nullptr){
+        node = node -> next;
+    }
+    return node;
 }
 
 BaseItem* BaseBag::get(ItemType itemType){
     return 0;
 }
+
+
 
 string BaseBag::toString() const{
     string typeString[5] = {"PhoenixI", "PhoenixII", "PhoenixIII", "PhoenixIV", "Antidote"};
@@ -191,11 +213,13 @@ void BaseKnight::KnightBagCreate(){
             BaseItem * temp = new PhoenixItemI();
             bag -> node = bag -> CreateBagNode(temp);
             bag -> preInsertFirst();
+            delete temp;
         }
         for (int i = 0; i < antidote; i++){
             BaseItem * temp = new AntidoteItem();
             bag -> node = bag -> CreateBagNode(temp);
             bag -> preInsertFirst();
+            delete temp;
         }
     }
     else if((this -> knightType) == LANCELOT){
@@ -205,11 +229,13 @@ void BaseKnight::KnightBagCreate(){
             BaseItem * temp = new PhoenixItemI();
             bag -> node = bag -> CreateBagNode(temp);
             bag -> preInsertFirst();
+            delete temp;
         }
         for (int i = 0; i < antidote; i++){
             BaseItem * temp = new AntidoteItem();
             bag -> node = bag -> CreateBagNode(temp);
             bag -> preInsertFirst();
+            delete temp;
         }
     }
     else if ((this -> knightType) == DRAGON){
@@ -219,11 +245,13 @@ void BaseKnight::KnightBagCreate(){
             BaseItem * temp = new PhoenixItemI();
             bag -> node = bag -> CreateBagNode(temp);
             bag -> preInsertFirst();
+            delete temp;
         }
         for (int i = 0; i < antidote; i++){
             BaseItem * temp = new AntidoteItem();
             bag -> node = bag -> CreateBagNode(temp);
             bag -> preInsertFirst();
+            delete temp;
         }
     }
     else {
@@ -233,15 +261,17 @@ void BaseKnight::KnightBagCreate(){
             BaseItem * temp = new PhoenixItemI();
             bag -> node = bag -> CreateBagNode(temp);
             bag -> preInsertFirst();
+            delete temp;
         }
         for (int i = 0; i < antidote; i++){
             BaseItem * temp = new AntidoteItem();
             bag -> node = bag -> CreateBagNode(temp);
             bag -> preInsertFirst();
+            delete temp;
         }
     }
     bag -> num_of_item = phoenixdownI + antidote;
-    bag -> PrintBagList();
+    
 }
 
 KnightType BaseKnight::getKnightType(){
@@ -253,6 +283,7 @@ string BaseKnight::toString() const {
     // inefficient version, students can change these code
     //      but the format output must be the same
     string s("");
+    bag -> PrintBagList();
     s += "[Knight:id:" + to_string(id) 
         + ",hp:" + to_string(hp) 
         + ",maxhp:" + to_string(maxhp)
@@ -361,7 +392,6 @@ void NormalKnight::fight(BaseOpponent * opponent){
         hp = hp - (opponent -> baseDamage) * ((opponent -> levelO) - level);
     }
     else{
-        level++;
         gil = gil + (opponent -> gilValue);
     }
 }
@@ -405,6 +435,10 @@ bool ArmyKnights::adventure(Events * events){
     int events_order = events -> getID();
     if ((this -> fightUltimecia()) == true) return true;
     return false;
+}
+
+void ArmyKnights::UseItem(BaseKnight* Knight){
+    
 }
 
 void ArmyKnights::collectArmyItem(){
@@ -516,6 +550,7 @@ void KnightAdventure::run(){
             opponent = opponent -> OpponentCreate(events -> get(i), i);
             armyKnights -> fight(opponent);
         }
+        
         armyKnights -> collectArmyItem();
         armyKnights -> printInfo();
         if (i == num_of_events - 1){
