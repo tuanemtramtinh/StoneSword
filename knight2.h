@@ -62,9 +62,8 @@ public:
     AntidoteItem(){
         this -> itemType = Antidote;
     }
-    BaseItem * get(ItemType itemType){return nullptr;}
-    bool canUse(BaseKnight * knight){return 0;}
-    void use(BaseKnight * knight){}
+    bool canUse(BaseKnight * knight);
+    void use(BaseKnight * knight);
 };
 
 class PhoenixItemI : public BaseItem{
@@ -72,9 +71,8 @@ public:
     PhoenixItemI(){
         this -> itemType = PhoenixDownI;
     }
-    BaseItem * get(ItemType itemType){return nullptr;}
-    bool canUse(BaseKnight * knight){return 0;}
-    void use(BaseKnight * knight){}
+    bool canUse(BaseKnight * knight);
+    void use(BaseKnight * knight);
 };
 
 class PhoenixItemII : public BaseItem{
@@ -82,9 +80,8 @@ public:
     PhoenixItemII(){
         this -> itemType = PhoenixDownII;
     }
-    BaseItem * get(ItemType itemType){return nullptr;}
-    bool canUse(BaseKnight * knight){return 0;}
-    void use(BaseKnight * knight){}
+    bool canUse(BaseKnight * knight);
+    void use(BaseKnight * knight);
 };
 
 class PhoenixItemIII : public BaseItem{
@@ -92,9 +89,8 @@ public:
     PhoenixItemIII(){
         this -> itemType = PhoenixDownIII;
     }
-    BaseItem * get(ItemType itemType){return nullptr;}
-    bool canUse(BaseKnight * knight){return 0;}
-    void use(BaseKnight * knight){}
+    bool canUse(BaseKnight * knight);
+    void use(BaseKnight * knight);
 };
 
 class PhoenixItemIV : public BaseItem{
@@ -102,9 +98,8 @@ public:
     PhoenixItemIV(){
         this -> itemType = PhoenixDownIV;
     }
-    BaseItem * get(ItemType itemType){return nullptr;}
-    bool canUse(BaseKnight * knight){return 0;}
-    void use(BaseKnight * knight){}
+    bool canUse(BaseKnight * knight);
+    void use(BaseKnight * knight);
 };
 
 /********CREATE LINKED LIST********/
@@ -283,13 +278,11 @@ public:
     int getId(){return this -> id;} int getHP(){return this -> hp;} int getMaxhp(){return this -> maxhp;} int getLevel(){return this -> level;}
     int getGil(){return this -> gil;} int getAntidote(){return this -> antidote;} int getPhoenixdownI(){return this -> phoenixdownI;}
     BaseBag * getBag(){return this -> bag;}
-    void replaceBag(BaseBag * x){
-        BaseBag * temp = bag;
-        bag = x;
-        delete temp;
+    void HPModify(int x){
+        this -> hp = x;
     }
     void PrintBagTest();
-    virtual void fight(BaseOpponent * opponent){}
+    virtual void fight(BaseOpponent * opponent) = 0;
     string toString() const;
 };
 
@@ -338,7 +331,7 @@ public:
     bool fightUltimecia();
     int count() const;
    
-    void UseItem(BaseKnight* Knight);
+    void UseItem();
 
     BaseKnight * lastKnight() const;
     void deleteFaintedLastKnight();

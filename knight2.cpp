@@ -77,8 +77,98 @@ Events::~Events(){
 
 /* * * END implementation of class BaseItem * * */
 
+/*BEGIN implementation of derived class Antidote*/
+
+bool AntidoteItem::canUse(BaseKnight * knight){
+    return 0;
+}
+
+void AntidoteItem::use(BaseKnight * knight){
+
+}
+
+/*END implementation of derived class Antidote*/
+
+/*BEGIN implementation of derived class PhoenixItemI*/
+
+bool PhoenixItemI::canUse(BaseKnight * knight){
+    if (knight -> getHP() <= 0) return true;
+    return false;
+}
+
+void PhoenixItemI::use(BaseKnight * knight){
+    int maxhp = knight -> getMaxhp();
+    knight -> HPModify(maxhp);
+}
+
+/*END implementation of derived class PhoenixItemI*/
+
+/*BEGIN implementation of derived class PhoenixItemII*/
+
+bool PhoenixItemII::canUse(BaseKnight * knight){
+    int hp = knight -> getHP();
+    int maxhp = knight -> getMaxhp();
+    if (hp < maxhp / 4) return true;
+    return false;
+}
+
+void PhoenixItemII::use(BaseKnight * knight){
+    int hp = knight -> getHP();
+    int maxhp = knight -> getMaxhp();
+    if (hp < maxhp / 4) knight -> HPModify(maxhp);
+}
+
+/*END implementation of derived class PhoenixItem II*/
+
+/*BEGIN implementation of derived class PhoenixItemIII*/
+
+bool PhoenixItemIII::canUse(BaseKnight * knight){
+    int hp = knight -> getHP();
+    int maxhp = knight -> getMaxhp();
+    if (hp < maxhp / 3 || hp <= 0) return true;
+    return false;
+}
+
+void PhoenixItemIII::use(BaseKnight * knight){
+    int hp = knight -> getHP();
+    int maxhp = knight -> getMaxhp();
+    if (hp < maxhp / 3){
+        int hpInc = hp + (maxhp / 4);
+        knight -> HPModify(hpInc);
+    }
+    else if (hp <= 0){
+        knight -> HPModify(maxhp / 3);
+    }
+}
+
+/*END implementation of derived class PhoenixItem III*/
+
+/*BEGIN implementation of derived class PhoenixItemIV*/
+
+bool PhoenixItemIV::canUse(BaseKnight * knight){
+    int hp = knight -> getHP();
+    int maxhp = knight -> getMaxhp();
+    if (hp < maxhp / 2 || hp <= 0) return true;
+    return false;
+}
+
+void PhoenixItemIV::use(BaseKnight * knight){
+    int hp = knight -> getHP();
+    int maxhp = knight -> getMaxhp();
+    if (hp < maxhp / 2){
+        int hpInc = hp + (maxhp / 5);
+        knight -> HPModify(hpInc);
+    }
+    else if (hp <= 0){
+        knight -> HPModify(maxhp / 2);
+    }
+}
+
+/*END implementation of derived class PhoenixItemIV*/
+
 /* * * BEGIN implementation of class BaseBag * * */
 
+//Thêm vật phẩm vào đầu của túi
 bool BaseBag::insertFirst(BaseItem * item){
     if (l.head == nullptr){
         l.head = this -> node;
@@ -91,16 +181,14 @@ bool BaseBag::insertFirst(BaseItem * item){
     return true;
 }
 
-Node * BaseBag::FindItem(BaseItem * item){
+//Tìm vật phẩm ở trong túi của Hiệp Sĩ
+BaseItem* BaseBag::get(ItemType itemType){
     Node * node = l.head;
-    while ((node -> data -> itemType) != (item -> itemType) && node != nullptr){
+    while ((node -> data -> itemType) != (itemType) && node != nullptr){
         node = node -> next;
     }
-    return node;
-}
-
-BaseItem* BaseBag::get(ItemType itemType){
-    return 0;
+    if (node == nullptr) return nullptr;
+    return node -> data;
 }
 
 
@@ -460,8 +548,25 @@ void ArmyKnights::collectPhoenix(){
     delete tempItem;
 }
 
-void ArmyKnights::UseItem(BaseKnight* Knight){
+void ArmyKnights::UseItem(){
+    BaseKnight * lk9 = lastKnight();
+    BaseBag * tempBag = lk9 -> getBag();
+    BaseItem * tempItem;
+    if (lk9 -> getMaxhp() < (lk9 -> getMaxhp())/2){
+        tempItem = tempBag -> get(PhoenixDownII);
+        if (tempItem != nullptr){
+
+        }
+    }
+    else if (lk9 -> getMaxhp() < (lk9 -> getMaxhp())/3){
     
+    }
+    else if (lk9 -> getMaxhp() < (lk9 -> getMaxhp())/4){
+
+    }
+    else if (lk9 -> getMaxhp() <= 0){
+
+    }
 }
 
 void ArmyKnights::collectArmyItem(){
