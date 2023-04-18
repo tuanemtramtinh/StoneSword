@@ -191,6 +191,22 @@ BaseItem* BaseBag::get(ItemType itemType){
     return node -> data;
 }
 
+//Đổi chỗ vật cần sử dụng và xóa nó khỏi danh sách
+void BaseBag::swap_and_remove_item(ItemType itemType){
+    BaseItem * tempItem;
+    Node * node = l.head;
+    while ((node -> data -> itemType) != (itemType) && node != nullptr){
+        
+        node = node -> next;
+    }
+    //Đổi chỗ vật cần sử dụng
+    tempItem = l.head -> data;
+    l.head -> data = node -> data;
+    node -> data = tempItem;
+    //Xóa vật
+    Node * temp = l.head;
+    l.head = l.head -> next;
+}
 
 
 string BaseBag::toString() const{
@@ -352,7 +368,7 @@ void BaseKnight::KnightBagCreate(){
         }
     }
     bag -> num_of_item = phoenixdownI + antidote;
-    delete temp;
+    //delete temp;
 }
 
 KnightType BaseKnight::getKnightType(){
@@ -516,8 +532,8 @@ void ArmyKnights::deleteFaintedLastKnight(){
 }
 
 bool ArmyKnights::adventure(Events * events){
-    int num_of_events = events -> count();
-    int events_order = events -> getID();
+    //int num_of_events = events -> count();
+    //int events_order = events -> getID();
     if ((this -> fightUltimecia()) == true) return true;
     return false;
 }
@@ -544,28 +560,52 @@ void ArmyKnights::collectPhoenix(){
         tempBag -> insertFirst(tempItem);
         tempBag -> num_of_item ++;
     }
-    delete tempBag;
-    delete tempItem;
+    //delete tempBag;
+    //delete tempItem;
 }
 
 void ArmyKnights::UseItem(){
     BaseKnight * lk9 = lastKnight();
     BaseBag * tempBag = lk9 -> getBag();
     BaseItem * tempItem;
-    if (lk9 -> getMaxhp() < (lk9 -> getMaxhp())/2){
-        tempItem = tempBag -> get(PhoenixDownII);
+    
+    int hp = lk9 -> getHP();
+    int maxhp = lk9 -> getMaxhp();
+    if (lk9 -> getHP() <= 0){
+        tempItem = tempBag -> get(PhoenixDownI);
         if (tempItem != nullptr){
-
+            if (tempItem -> canUse(lk9)){
+                tempItem -> use(lk9);
+                tempBag -> swap_and_remove_item(PhoenixDownI);
+            }
         }
     }
-    else if (lk9 -> getMaxhp() < (lk9 -> getMaxhp())/3){
-    
+    else if (lk9 -> getHP() < (lk9 -> getMaxhp())/4){
+        tempItem = tempBag -> get(PhoenixDownIV);
+        if (tempItem != nullptr){
+            if (tempItem -> canUse(lk9)){
+                tempItem -> use(lk9);
+                tempBag -> swap_and_remove_item(PhoenixDownIV);
+            }
+        }
     }
-    else if (lk9 -> getMaxhp() < (lk9 -> getMaxhp())/4){
-
+    else if (lk9 -> getHP() < (lk9 -> getMaxhp())/3){
+        tempItem = tempBag -> get(PhoenixDownIII);
+        if (tempItem != nullptr){
+            if (tempItem -> canUse(lk9)){
+                tempItem -> use(lk9);
+                tempBag -> swap_and_remove_item(PhoenixDownIII);
+            }
+        }
     }
-    else if (lk9 -> getMaxhp() <= 0){
-
+    else if (lk9 -> getHP() < (lk9 -> getMaxhp())/2){
+        tempItem = tempBag -> get(PhoenixDownII);
+        if (tempItem != nullptr){
+            if (tempItem -> canUse(lk9)){
+                tempItem -> use(lk9);
+                tempBag -> swap_and_remove_item(PhoenixDownII);
+            }
+        }
     }
 }
 
@@ -615,9 +655,12 @@ int ArmyKnights::count() const{
 
 bool ArmyKnights::fight(BaseOpponent * opponent){
     for (int i = cap - 1; i >= 0; i--){
-        KnightL1st[i] -> fight(opponent); //Cho hiệp sĩ cuối đánh với quái trước
+        KnightL1st[i] -> fight(opponent);
+        //Cho hiệp sĩ cuối đánh với quái trước
         if (KnightL1st[i] -> getHP() <= 0){ 
-            deleteFaintedLastKnight(); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi
+            UseItem();
+            if (KnightL1st[i] -> getHP() <= 0)
+                deleteFaintedLastKnight(); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi
         }
         else break;
     }
@@ -681,10 +724,11 @@ void KnightAdventure::run(){
         //if ((events -> get(i)) >= 112 && (events -> get(i)) <= 114){}
         armyKnights -> collectPhoenix();
         armyKnights -> collectArmyItem();
-        armyKnights -> printInfo();
+        armyKnights -> UseItem();
+        /*armyKnights -> printInfo();
         if (i == num_of_events - 1){
             armyKnights -> printResult(armyKnights -> adventure(events));
-        }
+        }*/
     }
     
     

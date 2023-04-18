@@ -177,6 +177,8 @@ public:
         }
     }
 
+    void swap_and_remove_item(ItemType itemType);
+
     virtual bool insertFirst(BaseItem * item);
     virtual BaseItem * get(ItemType itemType);
     virtual string toString() const;
@@ -330,7 +332,7 @@ public:
     bool adventure (Events * events);
     bool fightUltimecia();
     int count() const;
-   
+    
     void UseItem();
 
     BaseKnight * lastKnight() const;
@@ -381,4 +383,4 @@ public:
     void run();
 };
 
-#endif // __KNIGHT2_H__
+#endif //__KNIGHT2_H__
