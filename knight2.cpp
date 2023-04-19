@@ -419,7 +419,11 @@ PaladinKnight::~PaladinKnight(){
 }
 
 void PaladinKnight::fight(BaseOpponent * opponent){
-    
+    OpponentType MonsterType = opponent -> opponentType;
+    if (MonsterType >= 1 && MonsterType <= 5){
+        gil = gil + (opponent -> gilValue);
+        if (gil > 999) gil = 999;
+    }
 }
 
 /* * * END implementation of class PaladinKnight * * */
@@ -443,7 +447,11 @@ LancelotKnight::~LancelotKnight(){
 }
 
 void LancelotKnight::fight(BaseOpponent * opponent){
-    
+    OpponentType MonsterType = opponent -> opponentType;
+    if (MonsterType >= 1 && MonsterType <= 5){
+        gil = gil + (opponent -> gilValue);
+        if (gil > 999) gil = 999;
+    }
 }
 
 /* * * END implementation of class LancelotKnight * * */
@@ -467,7 +475,16 @@ DragonKnight::~DragonKnight(){
 }
 
 void DragonKnight::fight(BaseOpponent * opponent){
-
+    OpponentType MonsterType = opponent -> opponentType;
+    if (MonsterType >= 1 && MonsterType <= 5){
+        if (level < (opponent -> levelO)){
+        hp = hp - (opponent -> baseDamage) * ((opponent -> levelO) - level);
+        }
+        else{
+            gil = gil + (opponent -> gilValue);
+            if (gil > 999) gil = 999;
+        }
+    }
 }
 
 /* * * END implementation of class DragonKnight * * */
@@ -487,15 +504,18 @@ NormalKnight::NormalKnight(int id, int maxhp, int level, int gil, int antidote, 
 }
 
 NormalKnight::~NormalKnight(){
-
 }
 
 void NormalKnight::fight(BaseOpponent * opponent){
-    if (level < (opponent -> levelO)){
+    OpponentType MonsterType = opponent -> opponentType;
+    if (MonsterType >= 1 && MonsterType <= 5){
+        if (level < (opponent -> levelO)){
         hp = hp - (opponent -> baseDamage) * ((opponent -> levelO) - level);
-    }
-    else{
-        gil = gil + (opponent -> gilValue);
+        }
+        else{
+            gil = gil + (opponent -> gilValue);
+            if (gil > 999) gil = 999;
+        }
     }
 }
 

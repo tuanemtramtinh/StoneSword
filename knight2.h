@@ -148,8 +148,6 @@ public:
         }
     }
 
-    Node * FindItem(BaseItem * item);
-
     void PrintBagList(){
         string typeString[5] = {"PhoenixI", "PhoenixII", "PhoenixIII", "PhoenixIV", "Antidote"};
         PrintItemList = "";
@@ -208,11 +206,14 @@ public:
     ~NormalBag();
 };
 
+enum OpponentType {MADBEAR = 1, BANDIT, LORDLUPIN, ELF, TROLL, TORNBEY, QUEENOFCARDS, NINADERINGS, DURIANGARDEN, OMEGAWEAPON, HADES};
+
 class BaseOpponent{
 public:
     int levelO;
     int baseDamage;
     int gilValue;
+    OpponentType opponentType;
 public:
     void levelCalculate(int eventsID, int events_order);
     BaseOpponent * OpponentCreate(int eventsID, int events_order);
@@ -221,6 +222,7 @@ public:
 class MadBear : public BaseOpponent{
 public:
     MadBear(){
+        this -> opponentType = MADBEAR;
         this -> baseDamage = 10;
         this -> gilValue = 100;
     };
@@ -229,6 +231,7 @@ public:
 class Bandit : public BaseOpponent{
 public:
     Bandit(){
+        this -> opponentType = BANDIT;
         this -> baseDamage = 15;
         this -> gilValue = 150;
     }
@@ -237,6 +240,7 @@ public:
 class LordLupin : public BaseOpponent{
 public:
     LordLupin(){
+        this -> opponentType = LORDLUPIN;
         this -> baseDamage = 45;
         this -> gilValue = 450;
     }
@@ -245,6 +249,7 @@ public:
 class Elf : public BaseOpponent{
 public:
     Elf(){
+        this -> opponentType = ELF;
         this -> baseDamage = 75;
         this -> gilValue = 750;
     }
@@ -253,10 +258,27 @@ public:
 class Troll : public BaseOpponent{
 public:
     Troll(){
+        this -> opponentType = TROLL;
         this -> baseDamage = 95;
         this -> gilValue = 800;
     }
 };
+
+class Tornbey : public BaseOpponent{
+public:
+    Tornbey(){
+        this -> opponentType = TORNBEY;
+    }
+};
+
+class QueenOfCards : public BaseOpponent{
+public:
+    QueenOfCards(){
+        this -> opponentType = QUEENOFCARDS;
+    }
+};
+
+
 
 enum KnightType { PALADIN = 0, LANCELOT, DRAGON, NORMAL };
 
