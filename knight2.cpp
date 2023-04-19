@@ -187,8 +187,9 @@ BaseItem* BaseBag::get(ItemType itemType){
     while ((node -> data -> itemType) != (itemType) && node != nullptr){
         node = node -> next;
     }
-    if (node == nullptr) return nullptr;
-    return node -> data;
+    BaseItem * temp = node -> data;
+    if (temp == nullptr) return nullptr;
+    return temp;
 }
 
 //Đổi chỗ vật cần sử dụng và xóa nó khỏi danh sách
@@ -206,6 +207,7 @@ void BaseBag::swap_and_remove_item(ItemType itemType){
     //Xóa vật
     Node * temp = l.head;
     l.head = l.head -> next;
+    num_of_item--;
 }
 
 
@@ -725,10 +727,10 @@ void KnightAdventure::run(){
         armyKnights -> collectPhoenix();
         armyKnights -> collectArmyItem();
         armyKnights -> UseItem();
-        /*armyKnights -> printInfo();
+        armyKnights -> printInfo();
         if (i == num_of_events - 1){
             armyKnights -> printResult(armyKnights -> adventure(events));
-        }*/
+        }
     }
     
     
