@@ -293,6 +293,7 @@ protected:
     int gil;
     int antidote;
     int phoenixdownI;
+    int left_over_gil = 0; //Tiền bị dư ra khi mà gil đạt 999
     BaseBag * bag;
     KnightType knightType;
 
@@ -301,17 +302,36 @@ public:
     static BaseKnight * create(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI);
     void KnightBagCreate();
 
-    int getId(){return this -> id;} int getHP(){return this -> hp;} int getMaxhp(){return this -> maxhp;} int getLevel(){return this -> level;}
-    int getGil(){return this -> gil;} int getAntidote(){return this -> antidote;} int getPhoenixdownI(){return this -> phoenixdownI;}
+    int getId(){return this -> id;}
+    int getHP(){return this -> hp;}
+    int getGil(){return this -> gil;}
+    int getMaxhp(){return this -> maxhp;}
+    int getLevel(){return this -> level;}
+    int getAntidote(){return this -> antidote;}
+    int getLeft_over_gil(){return this -> left_over_gil;}
+    int getPhoenixdownI(){return this -> phoenixdownI;}
     BaseBag * getBag(){return this -> bag;}
 
+    //Thay đổi máu
     void HPModify(int x){
         this -> hp = x;
+    }
+    //Tăng số lượng gil
+    void gilInc(int x){
+        this -> gil = this -> gil + x;
+    }
+    //Set số lượng gil
+    void gilSet(int x){
+        this -> gil = x;
+    }
+    void left_over_gil_set(int x){
+        this -> left_over_gil = x;
     }
 
     virtual void fight(BaseOpponent * opponent) = 0;
     void fightTornbey(BaseOpponent * opponent);
     void fightQueenofCards(BaseOpponent * opponent);
+    void fightDurianGarden();
 
     void UseItemKnight();
     void GilRevive();
@@ -376,7 +396,7 @@ public:
     bool hasExcaliburSword() const;
     void collectPhoenix(); //Dùng để nhặt cho sự kiện từ 112 -> 114
     void collectArmyItem(); //Dùng để nhặt các báu vật
-
+    void pass_gil_to_previous(); // Dùng để truyền gil cho hiệp sĩ trước;
 
     void printInfo() const;
     void printResult(bool win) const;

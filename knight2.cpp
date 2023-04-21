@@ -458,9 +458,7 @@ void BaseKnight::GilRevive(){
 //Đánh với quái Tornbey (MSK: 6)
 void BaseKnight::fightTornbey(BaseOpponent * opponent){
     bool PoisonAffected = false;
-    //cout << opponent -> levelO;
-    //cout << this -> level;
-    if (level > opponent -> levelO){
+    if (level > opponent -> levelO || knightType == DRAGON){
         level++;
         if (level > 10)
             this -> level = 10;
@@ -486,8 +484,21 @@ void BaseKnight::fightTornbey(BaseOpponent * opponent){
 }
 
 //Đánh với QueenOfCards (MSK: 7)
-void BaseKnight::fightQueenofCards(){
-    
+void BaseKnight::fightQueenofCards(BaseOpponent * opponent){
+    if (level < opponent -> levelO){
+        gil /= 2;
+    }
+    else{
+        gil *= 2;
+        if (gil > 999){
+            left_over_gil = gil - 999;
+        }
+        else left_over_gil = 0;
+    }
+}
+
+void BaseKnight::fightDurianGarden(){
+    this -> HPModify(maxhp);
 }
 
 string BaseKnight::toString() const {
@@ -534,12 +545,20 @@ PaladinKnight::~PaladinKnight(){
 void PaladinKnight::fight(BaseOpponent * opponent){
     OpponentType MonsterType = opponent -> opponentType;
     if (MonsterType >= 1 && MonsterType <= 5){
-        gil = gil + (opponent -> gilValue);
-        if (gil > 999) gil = 999;
+        if (level < (opponent -> levelO)){
+        hp = hp - (opponent -> baseDamage) * ((opponent -> levelO) - level);
+        }
+        else{
+            gil = gil + (opponent -> gilValue);
+            if (gil > 999){
+                left_over_gil = gil - 999;
+            }
+            else left_over_gil = 0;
+        }
     }
-    if (MonsterType == 6){
-        fightTornbey(opponent);
-    }
+    else if (MonsterType == 6) fightTornbey(opponent);
+    else if (MonsterType == 7) fightQueenofCards(opponent);
+    else if (MonsterType == DURIANGARDEN) fightDurianGarden();
 }
 
 /* * * END implementation of class PaladinKnight * * */
@@ -565,12 +584,20 @@ LancelotKnight::~LancelotKnight(){
 void LancelotKnight::fight(BaseOpponent * opponent){
     OpponentType MonsterType = opponent -> opponentType;
     if (MonsterType >= 1 && MonsterType <= 5){
-        gil = gil + (opponent -> gilValue);
-        if (gil > 999) gil = 999;
+        if (level < (opponent -> levelO)){
+        hp = hp - (opponent -> baseDamage) * ((opponent -> levelO) - level);
+        }
+        else{
+            gil = gil + (opponent -> gilValue);
+            if (gil > 999){
+                left_over_gil = gil - 999;
+            }
+            else left_over_gil = 0;
+        }
     }
-    if (MonsterType == 6){
-        fightTornbey(opponent);
-    }
+    else if (MonsterType == 6) fightTornbey(opponent);
+    else if (MonsterType == 7) fightQueenofCards(opponent);
+    else if (MonsterType == DURIANGARDEN) fightDurianGarden();
 }
 
 /* * * END implementation of class LancelotKnight * * */
@@ -601,12 +628,15 @@ void DragonKnight::fight(BaseOpponent * opponent){
         }
         else{
             gil = gil + (opponent -> gilValue);
-            if (gil > 999) gil = 999;
+            if (gil > 999){
+                left_over_gil = gil - 999;
+            }
+            else left_over_gil = 0;
         }
     }
-    if (MonsterType == 6){
-        fightTornbey(opponent);
-    }
+    else if (MonsterType == 6) fightTornbey(opponent);
+    else if (MonsterType == 7) fightQueenofCards(opponent);
+    else if (MonsterType == DURIANGARDEN) fightDurianGarden();
 }
 
 /* * * END implementation of class DragonKnight * * */
@@ -636,13 +666,15 @@ void NormalKnight::fight(BaseOpponent * opponent){
         }
         else{
             gil = gil + (opponent -> gilValue);
-            if (gil > 999) gil = 999;
+            if (gil > 999){
+                left_over_gil = gil - 999;
+            }
+            else left_over_gil = 0;
         }
     }
-    if (MonsterType == 6){
-        //cout << "hello";
-        this -> fightTornbey(opponent);
-    }
+    else if (MonsterType == 6) fightTornbey(opponent);
+    else if (MonsterType == 7) fightQueenofCards(opponent);
+    else if (MonsterType == DURIANGARDEN) fightDurianGarden();
 }
 
 /* * * END implementation of class NormalKnight * * */
@@ -682,8 +714,6 @@ void ArmyKnights::deleteFaintedLastKnight(){
 }
 
 bool ArmyKnights::adventure(Events * events){
-    //int num_of_events = events -> count();
-    //int events_order = events -> getID();
     if ((this -> fightUltimecia()) == true) return true;
     return false;
 }
@@ -710,8 +740,6 @@ void ArmyKnights::collectPhoenix(){
         tempBag -> insertFirst(tempItem);
         tempBag -> num_of_item ++;
     }
-    //delete tempBag;
-    //delete tempItem;
 }
 
 void ArmyKnights::UseItem(){
@@ -733,6 +761,28 @@ void ArmyKnights::collectArmyItem(){
     else if (eventsCode == 98 && excaliburSword == 0){
         if (paladinShield == true && lancelotSpear == true && guinevereHair == true)
             excaliburSword = 1;
+    }
+}
+
+//Truyền gil cho hiệp sĩ trước và giới hạn lại gil
+void ArmyKnights::pass_gil_to_previous(){
+    int army_left_over_gil = 0; 
+    
+    for (int i = cap - 1; i >= 0; i --){
+        army_left_over_gil = KnightL1st[i] -> getLeft_over_gil();
+        if (i == cap - 1){
+            if (army_left_over_gil > 0){
+                KnightL1st[i] -> gilSet(999);
+                KnightL1st[i] -> left_over_gil_set(0);
+                army_left_over_gil = KnightL1st[i] -> getLeft_over_gil();
+            }
+        }
+        if (army_left_over_gil > 0){
+            KnightL1st[i - 1] -> gilInc(army_left_over_gil);
+            KnightL1st[i] -> gilSet(999);
+            KnightL1st[i] -> left_over_gil_set(0);
+            army_left_over_gil = KnightL1st[i] -> getLeft_over_gil();
+        }
     }
 }
 
@@ -766,7 +816,6 @@ int ArmyKnights::count() const{
 
 bool ArmyKnights::fight(BaseOpponent * opponent){
     for (int i = cap - 1; i >= 0; i--){
-        //cout << KnightL1st[i] -> getKnightType();
         KnightL1st[i] -> fight(opponent);
         //Cho hiệp sĩ cuối đánh với quái trước
         if (KnightL1st[i] -> getHP() <= 0){ 
@@ -835,6 +884,7 @@ void KnightAdventure::run(){
             //cout << opponent -> opponentType;
             armyKnights -> fight(opponent);
         }
+        armyKnights -> pass_gil_to_previous(); //Truyền gil cho hiệp sĩ trước và đồng thời set lại gil
         armyKnights -> collectPhoenix(); //Nhặt sự kiện từ mã 112 -> 114
         armyKnights -> collectArmyItem(); //Nhặt báu vật 95 -> 98
         armyKnights -> UseItem(); //Sử dụng vật phẩm
