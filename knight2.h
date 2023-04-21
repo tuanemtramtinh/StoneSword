@@ -176,6 +176,7 @@ public:
     }
 
     void swap_and_remove_item(ItemType itemType);
+    void remove_antidote_effect();
 
     virtual bool insertFirst(BaseItem * item);
     virtual BaseItem * get(ItemType itemType);
@@ -299,14 +300,22 @@ public:
     KnightType getKnightType();
     static BaseKnight * create(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI);
     void KnightBagCreate();
+
     int getId(){return this -> id;} int getHP(){return this -> hp;} int getMaxhp(){return this -> maxhp;} int getLevel(){return this -> level;}
     int getGil(){return this -> gil;} int getAntidote(){return this -> antidote;} int getPhoenixdownI(){return this -> phoenixdownI;}
     BaseBag * getBag(){return this -> bag;}
+
     void HPModify(int x){
         this -> hp = x;
     }
-    void PrintBagTest();
+
     virtual void fight(BaseOpponent * opponent) = 0;
+    void fightTornbey(BaseOpponent * opponent);
+    void fightQueenofCards(BaseOpponent * opponent);
+
+    void UseItemKnight();
+    void GilRevive();
+    void PrintBagTest();
     string toString() const;
 };
 
@@ -353,6 +362,7 @@ public:
     bool fight(BaseOpponent * opponent);
     bool adventure (Events * events);
     bool fightUltimecia();
+    void fightTornbey();
     int count() const;
     
     void UseItem();

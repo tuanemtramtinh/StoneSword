@@ -80,7 +80,7 @@ Events::~Events(){
 /*BEGIN implementation of derived class Antidote*/
 
 bool AntidoteItem::canUse(BaseKnight * knight){
-    return 0;
+    return true;
 }
 
 void AntidoteItem::use(BaseKnight * knight){
@@ -184,12 +184,13 @@ bool BaseBag::insertFirst(BaseItem * item){
 //Tìm vật phẩm ở trong túi của Hiệp Sĩ
 BaseItem* BaseBag::get(ItemType itemType){
     Node * node = l.head;
-    while ((node -> data -> itemType) != (itemType) && node != nullptr){
+    while (node != nullptr){
+        if (node -> data -> itemType == itemType){
+            return node -> data;
+        }
         node = node -> next;
     }
-    BaseItem * temp = node -> data;
-    if (temp == nullptr) return nullptr;
-    return temp;
+    return nullptr;
 }
 
 //Đổi chỗ vật cần sử dụng và xóa nó khỏi danh sách
@@ -197,7 +198,6 @@ void BaseBag::swap_and_remove_item(ItemType itemType){
     BaseItem * tempItem;
     Node * node = l.head;
     while ((node -> data -> itemType) != (itemType) && node != nullptr){
-        
         node = node -> next;
     }
     //Đổi chỗ vật cần sử dụng
@@ -208,6 +208,34 @@ void BaseBag::swap_and_remove_item(ItemType itemType){
     Node * temp = l.head;
     l.head = l.head -> next;
     num_of_item--;
+    delete temp;
+    temp = nullptr;
+}
+
+//Xoá vật phẩm khi bị dính độc của Tornbey (MSK: 6)
+void BaseBag::remove_antidote_effect(){
+    Node * node = l.head;
+    Node * temp;
+    if (num_of_item >= 3){
+        for (int i = 0; i < 3; i++){
+            temp = l.head;
+            node = node -> next;
+            l.head = node;
+            num_of_item--;
+            delete temp;
+        }
+    }
+    else {
+        for (int i = 0; i < num_of_item; i++){
+            temp = l.head;
+            node = node -> next;
+            l.head = node;
+            num_of_item--;
+            delete temp;
+        }
+    }
+    
+
 }
 
 
@@ -255,10 +283,6 @@ NormalBag::NormalBag(BaseKnight * x, int PhoenixDownI, int antidote){
 
 /* * * BEGIN implementation of class BaseOpponent * * */
 
-void BaseOpponent::levelCalculate(int eventsID, int events_order){
-    levelO = (events_order + eventsID) % 10 + 1;
-}
-
 BaseOpponent * BaseOpponent::OpponentCreate(int eventsID, int events_order){
     BaseOpponent * x = nullptr;
     this -> levelO = (events_order + eventsID) % 10 + 1;
@@ -282,6 +306,10 @@ BaseOpponent * BaseOpponent::OpponentCreate(int eventsID, int events_order){
         x = new Troll();
         x -> levelO = this -> levelO;
     }
+    else if (eventsID == 6){
+        x = new Tornbey();
+        x -> levelO = this -> levelO;
+    }
     return x;
 }
 
@@ -291,8 +319,7 @@ BaseOpponent * BaseOpponent::OpponentCreate(int eventsID, int events_order){
 
 BaseKnight * BaseKnight::create(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI){
     BaseKnight * x = nullptr;
-    if (PaladinCheck(maxhp))
-    {
+    if (PaladinCheck(maxhp)){
         x = new PaladinKnight(id, maxhp, level, gil, antidote, phoenixdownI);
         x -> knightType = KnightCheck(x -> maxhp);
     }
@@ -377,6 +404,92 @@ KnightType BaseKnight::getKnightType(){
     return this -> knightType;
 }
 
+//Tăng máu và hồi sinh bằng thuốc
+void BaseKnight::UseItemKnight(){
+    BaseItem * tempItem = nullptr;
+    if (hp <= 0){
+        tempItem = bag -> get(PhoenixDownI);
+        if (tempItem != nullptr){
+            if (tempItem -> canUse(this)){
+                tempItem -> use(this);
+                bag -> swap_and_remove_item(PhoenixDownI);
+            }
+        }
+    }
+    else if ( hp < maxhp / 4){
+        tempItem = bag -> get(PhoenixDownIV);
+        if (tempItem != nullptr){
+            if (tempItem -> canUse(this)){
+                tempItem -> use(this);
+                bag -> swap_and_remove_item(PhoenixDownIV);
+            }
+        }
+    }
+    else if (hp < maxhp / 3){
+        tempItem = bag -> get(PhoenixDownIII);
+        if (tempItem != nullptr){
+            if (tempItem -> canUse(this)){
+                tempItem -> use(this);
+                bag -> swap_and_remove_item(PhoenixDownIII);
+            }
+        }
+    }
+    else if (hp < maxhp / 2){
+        tempItem = bag -> get(PhoenixDownII);
+        if (tempItem != nullptr){
+            if (tempItem -> canUse(this)){
+                tempItem -> use(this);
+                bag -> swap_and_remove_item(PhoenixDownII);
+            }
+        }
+    }
+}
+
+//Hồi sinh bằng Gil
+void BaseKnight::GilRevive(){
+    if (hp <= 0){
+        if (gil >= 100){
+            gil -= 100;
+            HPModify(maxhp / 2);
+        }
+    }
+}
+
+//Đánh với quái Tornbey (MSK: 6)
+void BaseKnight::fightTornbey(BaseOpponent * opponent){
+    bool PoisonAffected = false;
+    //cout << opponent -> levelO;
+    //cout << this -> level;
+    if (level > opponent -> levelO){
+        level++;
+        if (level > 10)
+            this -> level = 10;
+    }
+    else{
+        PoisonAffected = true;
+        BaseItem * tempAntidote = nullptr;
+        if (PoisonAffected){
+            tempAntidote = bag -> get(Antidote);
+            if (tempAntidote != nullptr){
+                if (tempAntidote -> canUse(this)){
+                    bag -> swap_and_remove_item(Antidote);
+                }
+            }
+            else{
+                //cout << "hello";
+                bag -> remove_antidote_effect();
+                this -> hp = this -> hp - 10;
+            }
+        }
+        
+    }
+}
+
+//Đánh với QueenOfCards (MSK: 7)
+void BaseKnight::fightQueenofCards(){
+    
+}
+
 string BaseKnight::toString() const {
     string typeString[4] = {"PALADIN", "LANCELOT", "DRAGON", "NORMAL"};
     // inefficient version, students can change these code
@@ -424,6 +537,9 @@ void PaladinKnight::fight(BaseOpponent * opponent){
         gil = gil + (opponent -> gilValue);
         if (gil > 999) gil = 999;
     }
+    if (MonsterType == 6){
+        fightTornbey(opponent);
+    }
 }
 
 /* * * END implementation of class PaladinKnight * * */
@@ -451,6 +567,9 @@ void LancelotKnight::fight(BaseOpponent * opponent){
     if (MonsterType >= 1 && MonsterType <= 5){
         gil = gil + (opponent -> gilValue);
         if (gil > 999) gil = 999;
+    }
+    if (MonsterType == 6){
+        fightTornbey(opponent);
     }
 }
 
@@ -485,6 +604,9 @@ void DragonKnight::fight(BaseOpponent * opponent){
             if (gil > 999) gil = 999;
         }
     }
+    if (MonsterType == 6){
+        fightTornbey(opponent);
+    }
 }
 
 /* * * END implementation of class DragonKnight * * */
@@ -517,6 +639,10 @@ void NormalKnight::fight(BaseOpponent * opponent){
             if (gil > 999) gil = 999;
         }
     }
+    if (MonsterType == 6){
+        //cout << "hello";
+        this -> fightTornbey(opponent);
+    }
 }
 
 /* * * END implementation of class NormalKnight * * */
@@ -533,10 +659,12 @@ ArmyKnights::ArmyKnights (const string & file_armyknights){
     int hp, level, phoenixdownI, gil, antidote;
     for (int i = 0; i < n; i++){
         infile >> hp >> level >> phoenixdownI >> gil >> antidote;
+        //cout << hp << " " << level << " " << phoenixdownI << " " << gil << " " << antidote;
         KnightL1st[i] = BaseKnight::create(i + 1, hp, level, gil, antidote, phoenixdownI);
         KnightL1st[i] -> KnightBagCreate();
     }
     cap = n;
+
 }
 
 ArmyKnights::~ArmyKnights(){
@@ -588,47 +716,8 @@ void ArmyKnights::collectPhoenix(){
 
 void ArmyKnights::UseItem(){
     BaseKnight * lk9 = lastKnight();
-    BaseBag * tempBag = lk9 -> getBag();
-    BaseItem * tempItem;
-    
-    int hp = lk9 -> getHP();
-    int maxhp = lk9 -> getMaxhp();
-    if (lk9 -> getHP() <= 0){
-        tempItem = tempBag -> get(PhoenixDownI);
-        if (tempItem != nullptr){
-            if (tempItem -> canUse(lk9)){
-                tempItem -> use(lk9);
-                tempBag -> swap_and_remove_item(PhoenixDownI);
-            }
-        }
-    }
-    else if (lk9 -> getHP() < (lk9 -> getMaxhp())/4){
-        tempItem = tempBag -> get(PhoenixDownIV);
-        if (tempItem != nullptr){
-            if (tempItem -> canUse(lk9)){
-                tempItem -> use(lk9);
-                tempBag -> swap_and_remove_item(PhoenixDownIV);
-            }
-        }
-    }
-    else if (lk9 -> getHP() < (lk9 -> getMaxhp())/3){
-        tempItem = tempBag -> get(PhoenixDownIII);
-        if (tempItem != nullptr){
-            if (tempItem -> canUse(lk9)){
-                tempItem -> use(lk9);
-                tempBag -> swap_and_remove_item(PhoenixDownIII);
-            }
-        }
-    }
-    else if (lk9 -> getHP() < (lk9 -> getMaxhp())/2){
-        tempItem = tempBag -> get(PhoenixDownII);
-        if (tempItem != nullptr){
-            if (tempItem -> canUse(lk9)){
-                tempItem -> use(lk9);
-                tempBag -> swap_and_remove_item(PhoenixDownII);
-            }
-        }
-    }
+    lk9 -> UseItemKnight();
+    lk9 -> GilRevive();
 }
 
 void ArmyKnights::collectArmyItem(){
@@ -677,6 +766,7 @@ int ArmyKnights::count() const{
 
 bool ArmyKnights::fight(BaseOpponent * opponent){
     for (int i = cap - 1; i >= 0; i--){
+        //cout << KnightL1st[i] -> getKnightType();
         KnightL1st[i] -> fight(opponent);
         //Cho hiệp sĩ cuối đánh với quái trước
         if (KnightL1st[i] -> getHP() <= 0){ 
@@ -726,6 +816,7 @@ KnightAdventure::~KnightAdventure(){}
 
 void KnightAdventure::loadArmyKnights(const string & file_armyknights){
     armyKnights = new ArmyKnights(file_armyknights);
+
 }
 
 void KnightAdventure::loadEvents(const string & file_Events){
@@ -741,12 +832,12 @@ void KnightAdventure::run(){
         armyKnights -> eventsCode = events -> get(i); //Lấy mã sự kiện của sự kiện thứ i
         if (((events -> get(i)) >= 1 && (events -> get(i)) <= 7) || ((events -> get(i)) == 10) || ((events -> get(i)) == 11)){
             opponent = opponent -> OpponentCreate(events -> get(i), i);
+            //cout << opponent -> opponentType;
             armyKnights -> fight(opponent);
         }
-        //if ((events -> get(i)) >= 112 && (events -> get(i)) <= 114){}
-        armyKnights -> collectPhoenix();
-        armyKnights -> collectArmyItem();
-        armyKnights -> UseItem();
+        armyKnights -> collectPhoenix(); //Nhặt sự kiện từ mã 112 -> 114
+        armyKnights -> collectArmyItem(); //Nhặt báu vật 95 -> 98
+        armyKnights -> UseItem(); //Sử dụng vật phẩm
         armyKnights -> printInfo();
         if (i == num_of_events - 1){
             armyKnights -> printResult(armyKnights -> adventure(events));
