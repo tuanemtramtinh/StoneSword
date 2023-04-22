@@ -179,7 +179,11 @@ public:
     void remove_antidote_effect();
 
     virtual bool insertFirst(BaseItem * item);
+
+    //Tìm vật phẩm cần dùng
     virtual BaseItem * get(ItemType itemType);
+    //Tìm vật phẩm cho trường hợp HP <= 0
+    BaseItem * get_death();
     virtual string toString() const;
 };
 

@@ -193,6 +193,17 @@ BaseItem* BaseBag::get(ItemType itemType){
     return nullptr;
 }
 
+BaseItem* BaseBag::get_death(){
+    Node * node = l.head;
+    while (node != nullptr){
+        if (node -> data -> itemType == PhoenixDownI || node -> data -> itemType == PhoenixDownIII || node -> data -> itemType == PhoenixDownIV){
+            return node -> data;
+        }
+        node = node -> next;
+    }
+    return nullptr;
+}
+
 //Đổi chỗ vật cần sử dụng và xóa nó khỏi danh sách
 void BaseBag::swap_and_remove_item(ItemType itemType){
     BaseItem * tempItem;
@@ -310,6 +321,10 @@ BaseOpponent * BaseOpponent::OpponentCreate(int eventsID, int events_order){
         x = new Tornbey();
         x -> levelO = this -> levelO;
     }
+    else if (eventsID == 7){
+        x = new QueenOfCards();
+        x -> levelO = this -> levelO;
+    }
     return x;
 }
 
@@ -407,39 +422,26 @@ KnightType BaseKnight::getKnightType(){
 //Tăng máu và hồi sinh bằng thuốc
 void BaseKnight::UseItemKnight(){
     BaseItem * tempItem = nullptr;
+    //Khi HP <= 0 tìm kiếm phoenix gần nhất và sử dụng
     if (hp <= 0){
-        tempItem = bag -> get(PhoenixDownI);
-        if (tempItem != nullptr){
-            if (tempItem -> canUse(this)){
-                tempItem -> use(this);
-                bag -> swap_and_remove_item(PhoenixDownI);
-            }
+        tempItem = bag -> get_death();
+        if (tempItem != nullptr && tempItem -> canUse(this)){
+            tempItem -> use(this);
+            bag -> swap_and_remove_item(tempItem -> itemType);
         }
     }
-    else if ( hp < maxhp / 4){
-        tempItem = bag -> get(PhoenixDownIV);
-        if (tempItem != nullptr){
-            if (tempItem -> canUse(this)){
+    else{
+        ItemType item_to_use = PhoenixDownII;
+        while (item_to_use != 3){
+            tempItem = bag -> get(item_to_use);
+            if (tempItem != nullptr && tempItem -> canUse(this)){
                 tempItem -> use(this);
-                bag -> swap_and_remove_item(PhoenixDownIV);
+                bag -> swap_and_remove_item(item_to_use);
+                break;
             }
-        }
-    }
-    else if (hp < maxhp / 3){
-        tempItem = bag -> get(PhoenixDownIII);
-        if (tempItem != nullptr){
-            if (tempItem -> canUse(this)){
-                tempItem -> use(this);
-                bag -> swap_and_remove_item(PhoenixDownIII);
-            }
-        }
-    }
-    else if (hp < maxhp / 2){
-        tempItem = bag -> get(PhoenixDownII);
-        if (tempItem != nullptr){
-            if (tempItem -> canUse(this)){
-                tempItem -> use(this);
-                bag -> swap_and_remove_item(PhoenixDownII);
+            else{
+                if (item_to_use == PhoenixDownII) item_to_use = PhoenixDownIII;
+                else if (item_to_use == PhoenixDownIII) item_to_use = PhoenixDownIV;
             }
         }
     }
@@ -767,10 +769,9 @@ void ArmyKnights::collectArmyItem(){
 //Truyền gil cho hiệp sĩ trước và giới hạn lại gil
 void ArmyKnights::pass_gil_to_previous(){
     int army_left_over_gil = 0; 
-    
     for (int i = cap - 1; i >= 0; i --){
         army_left_over_gil = KnightL1st[i] -> getLeft_over_gil();
-        if (i == cap - 1){
+        if (i == 0){
             if (army_left_over_gil > 0){
                 KnightL1st[i] -> gilSet(999);
                 KnightL1st[i] -> left_over_gil_set(0);
