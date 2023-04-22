@@ -324,6 +324,7 @@ protected:
     int gil;
     int antidote;
     int phoenixdownI;
+    double base_dame;
     int left_over_gil = 0; //Tiền bị dư ra khi mà gil đạt 999
     BaseBag * bag;
     KnightType knightType;
@@ -341,6 +342,7 @@ public:
     int getAntidote(){return this -> antidote;}
     int getLeft_over_gil(){return this -> left_over_gil;}
     int getPhoenixdownI(){return this -> phoenixdownI;}
+    double getBase_Dame(){return this -> base_dame;}
     BaseBag * getBag(){return this -> bag;}
 
     //Thay đổi máu
@@ -365,7 +367,6 @@ public:
     void fightNinaDeRings();
     void fightDurianGarden();
     void fightOmegaWeapon();
-    void fightHades();
 
     void UseItemKnight();
     void GilRevive();
@@ -420,7 +421,7 @@ public:
     bool fight(BaseOpponent * opponent);
     bool adventure (Events * events);
     bool fightUltimecia();
-    void fightTornbey();
+    void fightHades();
     int count() const;
     
     void UseItem();

@@ -326,20 +326,16 @@ BaseOpponent * BaseOpponent::OpponentCreate(int eventsID, int events_order){
         x -> levelO = this -> levelO;
     }
     else if (eventsID == 8){
-        x = new NinaDeRings();
-        x -> levelO = this -> levelO;
+        x = new NinaDeRings();  
     }
     else if (eventsID == 9){
         x = new DurianGarden();
-        x -> levelO = this -> levelO;
     }
     else if (eventsID == 10){
         x = new OmegaWeapon();
-        x -> levelO = this -> levelO;
     }
     else if (eventsID == 11){
         x = new Hades();
-        x -> levelO = this -> levelO;
     }
     return x;
 }
@@ -532,13 +528,21 @@ void BaseKnight::fightDurianGarden(){
 
 //Đánh với OmegaWeapon (MSK: 10)
 void BaseKnight::fightOmegaWeapon(){
-
+    if ((level == 10 && hp == maxhp) || knightType == DRAGON){
+        level = 10;
+        gil = 999;
+    }
+    else hp = 0;
 }
 
 //Đánh với Hades (MSK: 11)
-void BaseKnight::fightHades(){
-
-}
+/*bool BaseKnight::fightHades(){
+    if (level == 10 || (level == 8 && knightType == PALADIN)) return true;
+    else{
+        hp = 0;
+        return false;
+    }
+}*/
 
 string BaseKnight::toString() const {
     string typeString[4] = {"PALADIN", "LANCELOT", "DRAGON", "NORMAL"};
@@ -575,6 +579,7 @@ PaladinKnight::PaladinKnight(int id, int maxhp, int level, int gil, int antidote
     this -> phoenixdownI = phoenixdownI;
     this -> knightType = PALADIN;
     this -> bag = nullptr;
+    this -> base_dame = 0.06;
 }
 
 PaladinKnight::~PaladinKnight(){
@@ -616,6 +621,7 @@ LancelotKnight::LancelotKnight(int id, int maxhp, int level, int gil, int antido
     this -> phoenixdownI = phoenixdownI;
     this -> knightType = LANCELOT;
     this -> bag = nullptr;
+    this -> base_dame = 0.05;
 }
 
 LancelotKnight::~LancelotKnight(){
@@ -657,6 +663,7 @@ DragonKnight::DragonKnight(int id, int maxhp, int level, int gil, int antidote, 
     this -> phoenixdownI = phoenixdownI;
     this -> knightType = DRAGON;
     this -> bag = nullptr;
+    this -> base_dame = 0.075;
 }
 
 DragonKnight::~DragonKnight(){
@@ -866,7 +873,8 @@ bool ArmyKnights::fight(BaseOpponent * opponent){
         //Cho hiệp sĩ cuối đánh với quái trước
         if (KnightL1st[i] -> getHP() <= 0){ 
             UseItem();
-            if (KnightL1st[i] -> getHP() <= 0)
+            if (KnightL1st[i] -> getHP() > 0) break;
+            else if (KnightL1st[i] -> getHP() <= 0)
                 deleteFaintedLastKnight(); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi
         }
         else break;
@@ -875,9 +883,37 @@ bool ArmyKnights::fight(BaseOpponent * opponent){
     return true;
 }
 
+void ArmyKnights::fightHades(){
+    for (int i = cap - 1; i >= 0; i--){
+        if ((KnightL1st[i] -> getLevel() == 10) || ((KnightL1st[i] -> getLevel()) == 8 && (KnightL1st[i] -> getKnightType()) == PALADIN)){
+            if (paladinShield == false) paladinShield = true;
+        }
+        else KnightL1st[i] -> HPModify(0);
+        if (KnightL1st[i] -> getHP() <= 0){
+           UseItem();
+            if (KnightL1st[i] -> getHP() > 0) break;
+            else if (KnightL1st[i] -> getHP() <= 0)
+                deleteFaintedLastKnight(); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi 
+        }
+        else break;
+    }
+}
+
 bool ArmyKnights::fightUltimecia(){
+    int UltimeciaHP = 5000;
+    int damage = 0;
     if (excaliburSword == true && eventsCode == 99) return true;
-    return false;
+    else{
+        //Đếm số lượng hiệp sĩ đánh với Ultimecia (Chủ yếu để xem rằng trong đội quân có còn ai Paladin, Dragon, Lancelot)
+        int knight_fight_Ultimecia = 0; 
+        for (int i = cap - 1; i >= 0; i--){
+            if ((KnightL1st[i] -> getKnightType()) == PALADIN || (KnightL1st[i] -> getKnightType()) == LANCELOT || (KnightL1st[i] -> getKnightType()) == DRAGON){
+                damage = (KnightL1st[i] -> getHP()) * (KnightL1st[i] -> getLevel()) * (KnightL1st[i] -> getBase_Dame());
+                UltimeciaHP -= damage;
+                
+            }
+        }
+    }
 }
 
 void ArmyKnights::printInfo() const {
@@ -922,13 +958,28 @@ void KnightAdventure::run(){
     int num_of_events = events -> count();
     opponent = new BaseOpponent;
     BaseOpponent * temp = opponent;
+    bool OmegaWeapon_meet = false, Hades_meet = false;
     for (int i = 0; i < num_of_events; i++){
         events -> substituteID(i); //Lấy thứ tự i của chuỗi events
         armyKnights -> eventsCode = events -> get(i); //Lấy mã sự kiện của sự kiện thứ i
         if ((events -> get(i)) >= 1 && (events -> get(i)) <= 11){
-            opponent = opponent -> OpponentCreate(events -> get(i), i);
-            //cout << opponent -> opponentType;
-            armyKnights -> fight(opponent);
+            if ((events -> get(i)) == 11 && Hades_meet == false){
+                armyKnights -> fightHades();
+                Hades_meet = true;
+            }
+            else{
+                if ((events -> get(i)) == 10 && OmegaWeapon_meet == false){
+                    opponent = opponent -> OpponentCreate(events -> get(i), i);
+                    //cout << opponent -> opponentType;
+                    armyKnights -> fight(opponent);
+                    OmegaWeapon_meet = true;
+                }
+                else {
+                    opponent = opponent -> OpponentCreate(events -> get(i), i);
+                    //cout << opponent -> opponentType;
+                    armyKnights -> fight(opponent);
+                }
+            }
         }
         armyKnights -> pass_gil_to_previous(); //Truyền gil cho hiệp sĩ trước và đồng thời set lại gil
         armyKnights -> collectPhoenix(); //Nhặt sự kiện từ mã 112 -> 114
