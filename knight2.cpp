@@ -132,7 +132,7 @@ bool PhoenixItemIII::canUse(BaseKnight * knight){
 void PhoenixItemIII::use(BaseKnight * knight){
     int hp = knight -> getHP();
     int maxhp = knight -> getMaxhp();
-    if (hp < maxhp / 3){
+    if (hp > 0 && hp < maxhp / 3){
         int hpInc = hp + (maxhp / 4);
         knight -> HPModify(hpInc);
     }
@@ -155,7 +155,7 @@ bool PhoenixItemIV::canUse(BaseKnight * knight){
 void PhoenixItemIV::use(BaseKnight * knight){
     int hp = knight -> getHP();
     int maxhp = knight -> getMaxhp();
-    if (hp < maxhp / 2){
+    if (hp > 0 && hp < maxhp / 2){
         int hpInc = hp + (maxhp / 5);
         knight -> HPModify(hpInc);
     }
@@ -325,6 +325,22 @@ BaseOpponent * BaseOpponent::OpponentCreate(int eventsID, int events_order){
         x = new QueenOfCards();
         x -> levelO = this -> levelO;
     }
+    else if (eventsID == 8){
+        x = new NinaDeRings();
+        x -> levelO = this -> levelO;
+    }
+    else if (eventsID == 9){
+        x = new DurianGarden();
+        x -> levelO = this -> levelO;
+    }
+    else if (eventsID == 10){
+        x = new OmegaWeapon();
+        x -> levelO = this -> levelO;
+    }
+    else if (eventsID == 11){
+        x = new Hades();
+        x -> levelO = this -> levelO;
+    }
     return x;
 }
 
@@ -481,13 +497,12 @@ void BaseKnight::fightTornbey(BaseOpponent * opponent){
                 this -> hp = this -> hp - 10;
             }
         }
-        
     }
 }
 
 //Đánh với QueenOfCards (MSK: 7)
 void BaseKnight::fightQueenofCards(BaseOpponent * opponent){
-    if (level < opponent -> levelO){
+    if (level < opponent -> levelO && knightType != PALADIN){
         gil /= 2;
     }
     else{
@@ -499,8 +514,30 @@ void BaseKnight::fightQueenofCards(BaseOpponent * opponent){
     }
 }
 
+//Trao đổi với NinaDeRings (MSK: 8)
+void BaseKnight::fightNinaDeRings(){
+    int HPinc = 0;
+    if ((gil >= 50 && hp < maxhp / 3) || (knightType != PALADIN && hp < maxhp / 3)){
+        if (knightType != PALADIN)
+            gil -= 50;
+        HPinc = hp + maxhp/5;
+        HPModify(HPinc);
+    }
+}
+
+//Đớp Vườn Sầu Riêng (MSK: 9)
 void BaseKnight::fightDurianGarden(){
     this -> HPModify(maxhp);
+}
+
+//Đánh với OmegaWeapon (MSK: 10)
+void BaseKnight::fightOmegaWeapon(){
+
+}
+
+//Đánh với Hades (MSK: 11)
+void BaseKnight::fightHades(){
+
 }
 
 string BaseKnight::toString() const {
@@ -560,7 +597,9 @@ void PaladinKnight::fight(BaseOpponent * opponent){
     }
     else if (MonsterType == 6) fightTornbey(opponent);
     else if (MonsterType == 7) fightQueenofCards(opponent);
+    else if (MonsterType == NINADERINGS) fightNinaDeRings();
     else if (MonsterType == DURIANGARDEN) fightDurianGarden();
+    else if (MonsterType == OMEGAWEAPON) fightOmegaWeapon();
 }
 
 /* * * END implementation of class PaladinKnight * * */
@@ -599,7 +638,9 @@ void LancelotKnight::fight(BaseOpponent * opponent){
     }
     else if (MonsterType == 6) fightTornbey(opponent);
     else if (MonsterType == 7) fightQueenofCards(opponent);
+    else if (MonsterType == NINADERINGS) fightNinaDeRings();
     else if (MonsterType == DURIANGARDEN) fightDurianGarden();
+    else if (MonsterType == OMEGAWEAPON) fightOmegaWeapon();
 }
 
 /* * * END implementation of class LancelotKnight * * */
@@ -638,7 +679,9 @@ void DragonKnight::fight(BaseOpponent * opponent){
     }
     else if (MonsterType == 6) fightTornbey(opponent);
     else if (MonsterType == 7) fightQueenofCards(opponent);
+    else if (MonsterType == NINADERINGS) fightNinaDeRings();
     else if (MonsterType == DURIANGARDEN) fightDurianGarden();
+    else if (MonsterType == OMEGAWEAPON) fightOmegaWeapon();
 }
 
 /* * * END implementation of class DragonKnight * * */
@@ -676,7 +719,9 @@ void NormalKnight::fight(BaseOpponent * opponent){
     }
     else if (MonsterType == 6) fightTornbey(opponent);
     else if (MonsterType == 7) fightQueenofCards(opponent);
+    else if (MonsterType == NINADERINGS) fightNinaDeRings();
     else if (MonsterType == DURIANGARDEN) fightDurianGarden();
+    else if (MonsterType == OMEGAWEAPON) fightOmegaWeapon();
 }
 
 /* * * END implementation of class NormalKnight * * */
@@ -880,7 +925,7 @@ void KnightAdventure::run(){
     for (int i = 0; i < num_of_events; i++){
         events -> substituteID(i); //Lấy thứ tự i của chuỗi events
         armyKnights -> eventsCode = events -> get(i); //Lấy mã sự kiện của sự kiện thứ i
-        if (((events -> get(i)) >= 1 && (events -> get(i)) <= 7) || ((events -> get(i)) == 10) || ((events -> get(i)) == 11)){
+        if ((events -> get(i)) >= 1 && (events -> get(i)) <= 11){
             opponent = opponent -> OpponentCreate(events -> get(i), i);
             //cout << opponent -> opponentType;
             armyKnights -> fight(opponent);

@@ -34,7 +34,7 @@ class Elf;
 class Troll;
 class Tornbey;
 class QueenOfCards;
-class NinaDeRing;
+class NinaDeRings;
 class DurianGarden;
 class OmegaWeapon;
 class Hades;
@@ -283,10 +283,37 @@ public:
     }
 };
 
+class NinaDeRings : public BaseOpponent{
+public:
+    NinaDeRings(){
+        this -> opponentType = NINADERINGS;
+    }
+};
 
+class DurianGarden : public BaseOpponent{
+public:
+    DurianGarden(){
+        this -> opponentType = DURIANGARDEN;
+    }
+};
+
+class OmegaWeapon : public BaseOpponent{
+public:
+    OmegaWeapon(){
+        this -> opponentType = OMEGAWEAPON;
+    }
+};
+
+class Hades : public BaseOpponent{
+public:
+    Hades(){
+        this -> opponentType = HADES;
+    }
+};
+
+/* * * BEGIN declare for class BaseKnight and its inheritance * * */
 
 enum KnightType { PALADIN = 0, LANCELOT, DRAGON, NORMAL };
-
 
 class BaseKnight {
 protected:
@@ -335,7 +362,10 @@ public:
     virtual void fight(BaseOpponent * opponent) = 0;
     void fightTornbey(BaseOpponent * opponent);
     void fightQueenofCards(BaseOpponent * opponent);
+    void fightNinaDeRings();
     void fightDurianGarden();
+    void fightOmegaWeapon();
+    void fightHades();
 
     void UseItemKnight();
     void GilRevive();
@@ -372,6 +402,10 @@ public:
     void fight(BaseOpponent * opponent);
 };
 
+/* * * END declare for class BaseKnight and its inheritance * * */
+
+/* * * BEGIN declare for class ArmyKnights * * */
+
 class ArmyKnights {
 public:
     int cap;
@@ -406,7 +440,9 @@ public:
     void printResult(bool win) const;
 };
 
+/* * * END declare for class ArmyKnights * * */
 
+/* * * BEGIN declare for class Events * * */
 
 class Events {
 
@@ -424,6 +460,8 @@ public:
     int getID();         // Lấy sự kiện thứ i ra khỏi
 };
 
+/* * * END declare for class Events * * */
+
 class KnightAdventure {
 private:
     ArmyKnights * armyKnights;
@@ -438,5 +476,7 @@ public:
     void loadEvents(const string & file_Events);
     void run();
 };
+
+
 
 #endif //__KNIGHT2_H__
