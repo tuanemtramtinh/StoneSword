@@ -266,7 +266,7 @@ string BaseBag::toString() const{
 
 /* * * BEGIN implementation PaladinBag * * */
 
-PaladinBag::PaladinBag(BaseKnight * x, int PhoenixDownI, int antidote){
+PaladinBag::PaladinBag(){
 
 }
 
@@ -274,7 +274,7 @@ PaladinBag::PaladinBag(BaseKnight * x, int PhoenixDownI, int antidote){
 
 /* * * BEGIN implementation LancelotBag * * */
 
-LancelotBag::LancelotBag(BaseKnight * x, int PhoenixDownI, int antidote){
+LancelotBag::LancelotBag(){
 
 }
 
@@ -282,7 +282,7 @@ LancelotBag::LancelotBag(BaseKnight * x, int PhoenixDownI, int antidote){
 
 /* * * BEGIN implementation DragonBag * * */
 
-DragonBag::DragonBag(BaseKnight * x, int PhoenixDownI, int antidote){
+DragonBag::DragonBag(){
 
 }
 
@@ -290,7 +290,7 @@ DragonBag::DragonBag(BaseKnight * x, int PhoenixDownI, int antidote){
 
 /* * * BEGIN implementation NormalBag * * */
 
-NormalBag::NormalBag(BaseKnight * x, int PhoenixDownI, int antidote){
+NormalBag::NormalBag(){
 
 }
 
@@ -372,7 +372,7 @@ BaseKnight * BaseKnight::create(int id, int maxhp, int level, int gil, int antid
 void BaseKnight::KnightBagCreate(){
     BaseItem * temp;
     if ((this -> knightType) == PALADIN){
-        bag = new PaladinBag(this, phoenixdownI, antidote);
+        bag = new PaladinBag();
         bag -> CreateBagList();
         for (int i = 0; i < phoenixdownI; i++){
             temp = new PhoenixItemI();
@@ -384,7 +384,7 @@ void BaseKnight::KnightBagCreate(){
         }
     }
     else if((this -> knightType) == LANCELOT){
-        bag = new LancelotBag(this, phoenixdownI, antidote);
+        bag = new LancelotBag();
         bag -> CreateBagList();
         for (int i = 0; i < phoenixdownI; i++){
             temp = new PhoenixItemI();
@@ -396,7 +396,7 @@ void BaseKnight::KnightBagCreate(){
         }
     }
     else if ((this -> knightType) == DRAGON){
-        bag = new DragonBag(this, phoenixdownI, antidote);
+        bag = new DragonBag();
         bag -> CreateBagList();
         for (int i = 0; i < phoenixdownI; i++){
             temp = new PhoenixItemI();
@@ -405,7 +405,7 @@ void BaseKnight::KnightBagCreate(){
         //Do DRAGON không cần lấy Antidote
     }
     else {
-        bag = new NormalBag(this, phoenixdownI, antidote);
+        bag = new NormalBag();
         bag -> CreateBagList();
         for (int i = 0; i < phoenixdownI; i++){
             temp = new PhoenixItemI();
@@ -527,15 +527,6 @@ void BaseKnight::fightOmegaWeapon(){
     }
     else hp = 0;
 }
-
-//Đánh với Hades (MSK: 11)
-/*bool BaseKnight::fightHades(){
-    if (level == 10 || (level == 8 && knightType == PALADIN)) return true;
-    else{
-        hp = 0;
-        return false;
-    }
-}*/
 
 string BaseKnight::toString() const {
     string typeString[4] = {"PALADIN", "LANCELOT", "DRAGON", "NORMAL"};

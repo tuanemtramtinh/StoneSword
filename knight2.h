@@ -124,6 +124,7 @@ public:
     Node * node;
     string PrintItemList;
     int num_of_item;
+    int bag_cap_limit = 0; //Giới hạn của túi đồ 
 public:
     void CreateBagList(){
         l.head = nullptr;
@@ -137,7 +138,7 @@ public:
         return node;
     }
 
-    void preInsertFirst(){
+    /*void preInsertFirst(){
         if (l.head == nullptr){
             l.head = node;
             l.tail = nullptr;
@@ -146,7 +147,7 @@ public:
             node -> next = l.head;
             l.head = node;
         }
-    }
+    }*/
 
     void PrintBagList(){
         string typeString[5] = {"PhoenixI", "PhoenixII", "PhoenixIII", "PhoenixIV", "Antidote"};
@@ -189,25 +190,31 @@ public:
 
 class PaladinBag : public BaseBag{
 public:
-    PaladinBag(BaseKnight * x, int PhoenixDownI, int antidote);
+    PaladinBag();
     ~PaladinBag();
 };
 
 class LancelotBag : public BaseBag{
 public:
-    LancelotBag(BaseKnight * x, int PhoenixDownI, int antidote);
+    LancelotBag(){
+        this -> bag_cap_limit = 16;
+    }
     ~LancelotBag();
 };
 
 class DragonBag : public BaseBag{
 public:
-    DragonBag(BaseKnight * x, int PhoenixDownI, int antidote);
+    DragonBag(){
+        this -> bag_cap_limit = 14;
+    }
     ~DragonBag();
 };
 
 class NormalBag : public BaseBag{
 public:
-    NormalBag(BaseKnight * x, int PhoenixDownI, int antidote);
+    NormalBag(){
+        this -> bag_cap_limit = 19;
+    }
     ~NormalBag();
 };
 
