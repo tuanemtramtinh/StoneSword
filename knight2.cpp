@@ -125,7 +125,7 @@ void PhoenixItemII::use(BaseKnight * knight){
 bool PhoenixItemIII::canUse(BaseKnight * knight){
     int hp = knight -> getHP();
     int maxhp = knight -> getMaxhp();
-    if (hp < maxhp / 3 || hp <= 0) return true;
+    if (hp < maxhp / 3 && hp > 0 || hp <= 0) return true;
     return false;
 }
 
@@ -148,7 +148,7 @@ void PhoenixItemIII::use(BaseKnight * knight){
 bool PhoenixItemIV::canUse(BaseKnight * knight){
     int hp = knight -> getHP();
     int maxhp = knight -> getMaxhp();
-    if (hp < maxhp / 2 || hp <= 0) return true;
+    if (hp < maxhp / 2 && hp > 0 || hp <= 0) return true;
     return false;
 }
 
@@ -200,7 +200,7 @@ BaseItem* BaseBag::get(ItemType itemType){
 BaseItem* BaseBag::get_death(){
     Node * node = l.head;
     while (node != nullptr){
-        if (node -> data -> itemType == PhoenixDownI || node -> data -> itemType == PhoenixDownIII || node -> data -> itemType == PhoenixDownIV){
+        if (node -> data -> itemType == PhoenixDownI || node -> data -> itemType == PhoenixDownII || node -> data -> itemType == PhoenixDownIII || node -> data -> itemType == PhoenixDownIV){
             return node -> data;
         }
         node = node -> next;
@@ -451,23 +451,30 @@ void BaseKnight::UseItemKnight(){
     //Khi HP <= 0 tìm kiếm phoenix gần nhất và sử dụng
     if (hp <= 0){
         tempItem = bag -> get_death();
+        //cout << tempItem -> itemType;
         if (tempItem != nullptr && tempItem -> canUse(this)){
             tempItem -> use(this);
             bag -> swap_and_remove_item(tempItem -> itemType);
         }
     }
     else{
-        ItemType item_to_use = PhoenixDownII;
-        while (item_to_use != 3){
-            tempItem = bag -> get(item_to_use);
+        tempItem = bag -> get(PhoenixDownII);
+        if (tempItem != nullptr && tempItem -> canUse(this)){
+            tempItem -> use(this);
+            bag -> swap_and_remove_item(tempItem -> itemType);
+        }
+        else{
+            tempItem = bag -> get(PhoenixDownIII);
             if (tempItem != nullptr && tempItem -> canUse(this)){
                 tempItem -> use(this);
-                bag -> swap_and_remove_item(item_to_use);
-                break;
+                bag -> swap_and_remove_item(tempItem -> itemType);
             }
             else{
-                if (item_to_use == PhoenixDownII) item_to_use = PhoenixDownIII;
-                else if (item_to_use == PhoenixDownIII) item_to_use = PhoenixDownIV;
+                tempItem = bag -> get(PhoenixDownIV);
+                if (tempItem != nullptr && tempItem -> canUse(this)){
+                    tempItem -> use(this);
+                    bag -> swap_and_remove_item(tempItem -> itemType);
+                }
             }
         }
     }
@@ -1019,8 +1026,10 @@ void KnightAdventure::run(){
         armyKnights -> pass_gil_to_previous(); //Truyền gil cho hiệp sĩ trước và đồng thời set lại gil
         armyKnights -> collectPhoenix(); //Nhặt sự kiện từ mã 112 -> 114
         armyKnights -> collectArmyItem(); //Nhặt báu vật 95 -> 98
-        if (events -> get(i) != 112 && events -> get(i) != 113 && events -> get(i) != 114)
+        if (events -> get(i) != 112 && events -> get(i) != 113 && events -> get(i) != 114){
             armyKnights -> UseItem(); //Sử dụng vật phẩm
+        }
+            
         if (i == num_of_events - 1){
             armyKnights -> fightUltimecia();
             armyKnights -> printInfo();
