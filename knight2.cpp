@@ -582,16 +582,11 @@ PaladinKnight::~PaladinKnight(){
 void PaladinKnight::fight(BaseOpponent * opponent){
     OpponentType MonsterType = opponent -> opponentType;
     if (MonsterType >= 1 && MonsterType <= 5){
-        if (level < (opponent -> levelO)){
-        hp = hp - (opponent -> baseDamage) * ((opponent -> levelO) - level);
+        gil = gil + (opponent -> gilValue);
+        if (gil > 999){
+            left_over_gil = gil - 999;
         }
-        else{
-            gil = gil + (opponent -> gilValue);
-            if (gil > 999){
-                left_over_gil = gil - 999;
-            }
-            else left_over_gil = 0;
-        }
+        else left_over_gil = 0;
     }
     else if (MonsterType == 6) fightTornbey(opponent);
     else if (MonsterType == 7) fightQueenofCards(opponent);
@@ -624,16 +619,11 @@ LancelotKnight::~LancelotKnight(){
 void LancelotKnight::fight(BaseOpponent * opponent){
     OpponentType MonsterType = opponent -> opponentType;
     if (MonsterType >= 1 && MonsterType <= 5){
-        if (level < (opponent -> levelO)){
-        hp = hp - (opponent -> baseDamage) * ((opponent -> levelO) - level);
+        gil = gil + (opponent -> gilValue);
+        if (gil > 999){
+            left_over_gil = gil - 999;
         }
-        else{
-            gil = gil + (opponent -> gilValue);
-            if (gil > 999){
-                left_over_gil = gil - 999;
-            }
-            else left_over_gil = 0;
-        }
+        else left_over_gil = 0;
     }
     else if (MonsterType == 6) fightTornbey(opponent);
     else if (MonsterType == 7) fightQueenofCards(opponent);
