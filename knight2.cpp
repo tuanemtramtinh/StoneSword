@@ -170,6 +170,10 @@ void PhoenixItemIV::use(BaseKnight * knight){
 
 //Thêm vật phẩm vào đầu của túi
 bool BaseBag::insertFirst(BaseItem * item){
+    Node * newNode = new Node;
+    newNode -> data = item;
+    newNode -> next = nullptr;
+    this -> node = newNode;
     if (l.head == nullptr){
         l.head = this -> node;
         l.tail = nullptr;
@@ -372,13 +376,11 @@ void BaseKnight::KnightBagCreate(){
         bag -> CreateBagList();
         for (int i = 0; i < phoenixdownI; i++){
             temp = new PhoenixItemI();
-            bag -> node = bag -> CreateBagNode(temp);
-            bag -> preInsertFirst();
+            bag -> insertFirst(temp);
         }
         for (int i = 0; i < antidote; i++){
             temp = new AntidoteItem();
-            bag -> node = bag -> CreateBagNode(temp);
-            bag -> preInsertFirst();
+            bag -> insertFirst(temp);
         }
     }
     else if((this -> knightType) == LANCELOT){
@@ -386,13 +388,11 @@ void BaseKnight::KnightBagCreate(){
         bag -> CreateBagList();
         for (int i = 0; i < phoenixdownI; i++){
             temp = new PhoenixItemI();
-            bag -> node = bag -> CreateBagNode(temp);
-            bag -> preInsertFirst();
+            bag -> insertFirst(temp);
         }
         for (int i = 0; i < antidote; i++){
             temp = new AntidoteItem();
-            bag -> node = bag -> CreateBagNode(temp);
-            bag -> preInsertFirst();
+            bag -> insertFirst(temp);
         }
     }
     else if ((this -> knightType) == DRAGON){
@@ -400,27 +400,20 @@ void BaseKnight::KnightBagCreate(){
         bag -> CreateBagList();
         for (int i = 0; i < phoenixdownI; i++){
             temp = new PhoenixItemI();
-            bag -> node = bag -> CreateBagNode(temp);
-            bag -> preInsertFirst();
+            bag -> insertFirst(temp);
         }
-        for (int i = 0; i < antidote; i++){
-            temp = new AntidoteItem();
-            bag -> node = bag -> CreateBagNode(temp);
-            bag -> preInsertFirst();
-        }
+        //Do DRAGON không cần lấy Antidote
     }
     else {
         bag = new NormalBag(this, phoenixdownI, antidote);
         bag -> CreateBagList();
         for (int i = 0; i < phoenixdownI; i++){
             temp = new PhoenixItemI();
-            bag -> node = bag -> CreateBagNode(temp);
-            bag -> preInsertFirst();
+            bag -> insertFirst(temp);
         }
         for (int i = 0; i < antidote; i++){
             temp = new AntidoteItem();
-            bag -> node = bag -> CreateBagNode(temp);
-            bag -> preInsertFirst();
+            bag -> insertFirst(temp);
         }
     }
     bag -> num_of_item = phoenixdownI + antidote;
@@ -757,7 +750,8 @@ ArmyKnights::~ArmyKnights(){
     KnightL1st = nullptr;
 };
 
-void ArmyKnights::deleteFaintedLastKnight(){
+//cần hợp nhất 2 hàm này lại với nhau
+BaseKnight** ArmyKnights::deleteFaintedLastKnight(){
     BaseKnight ** tempKnightList = new BaseKnight* [cap - 1];
     for (int i = 0; i < cap - 1; i++){
         tempKnightList[i] = KnightL1st[i];
@@ -765,10 +759,36 @@ void ArmyKnights::deleteFaintedLastKnight(){
     delete [] KnightL1st;
     KnightL1st = tempKnightList;
     cap--;
+    return KnightL1st;
+}
+
+BaseKnight** ArmyKnights::deleteKnight_Ultimecia(int index){
+    BaseKnight ** tempKnightList = new BaseKnight* [cap - 1];
+    for (int i = index; i < cap - 1; i++){
+        KnightL1st[i] = KnightL1st[i + 1];
+    }
+    for (int i = 0; i < cap - 1; i++){
+        tempKnightList[i] = tempKnightList[i + 1];
+    }
+    delete [] KnightL1st;
+    KnightL1st = tempKnightList;
+    cap--;
+    return KnightL1st;
+}
+
+//----------------------------------------
+
+BaseKnight ** ArmyKnights::set_army_knight(){
+    BaseKnight ** tempKnightList = new BaseKnight * [0];
+    delete [] KnightL1st;
+    KnightL1st = tempKnightList;
+    cap = 0;
+    return KnightL1st;
 }
 
 bool ArmyKnights::adventure(Events * events){
     if ((this -> fightUltimecia()) == true) return true;
+    if (cap < 0) return false;
     return false;
 }
 
@@ -778,19 +798,16 @@ void ArmyKnights::collectPhoenix(){
     BaseItem * tempItem;
     if (eventsCode == 112){
         tempItem = new PhoenixItemII();
-        tempBag -> node = tempBag -> CreateBagNode(tempItem);
         tempBag -> insertFirst(tempItem);
         tempBag -> num_of_item ++;
     }
     else if (eventsCode == 113){
         tempItem = new PhoenixItemIII();
-        tempBag -> node = tempBag -> CreateBagNode(tempItem);
         tempBag -> insertFirst(tempItem);
         tempBag -> num_of_item ++;
     }
     else if (eventsCode == 114){
         tempItem = new PhoenixItemIV();
-        tempBag -> node = tempBag -> CreateBagNode(tempItem);
         tempBag -> insertFirst(tempItem);
         tempBag -> num_of_item ++;
     }
@@ -875,7 +892,7 @@ bool ArmyKnights::fight(BaseOpponent * opponent){
             UseItem();
             if (KnightL1st[i] -> getHP() > 0) break;
             else if (KnightL1st[i] -> getHP() <= 0)
-                deleteFaintedLastKnight(); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi
+                KnightL1st = deleteFaintedLastKnight(); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi
         }
         else break;
     }
@@ -893,7 +910,7 @@ void ArmyKnights::fightHades(){
            UseItem();
             if (KnightL1st[i] -> getHP() > 0) break;
             else if (KnightL1st[i] -> getHP() <= 0)
-                deleteFaintedLastKnight(); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi 
+                KnightL1st = deleteFaintedLastKnight(); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi 
         }
         else break;
     }
@@ -904,14 +921,30 @@ bool ArmyKnights::fightUltimecia(){
     int damage = 0;
     if (excaliburSword == true && eventsCode == 99) return true;
     else{
-        //Đếm số lượng hiệp sĩ đánh với Ultimecia (Chủ yếu để xem rằng trong đội quân có còn ai Paladin, Dragon, Lancelot)
-        int knight_fight_Ultimecia = 0; 
-        for (int i = cap - 1; i >= 0; i--){
-            if ((KnightL1st[i] -> getKnightType()) == PALADIN || (KnightL1st[i] -> getKnightType()) == LANCELOT || (KnightL1st[i] -> getKnightType()) == DRAGON){
-                damage = (KnightL1st[i] -> getHP()) * (KnightL1st[i] -> getLevel()) * (KnightL1st[i] -> getBase_Dame());
-                UltimeciaHP -= damage;
-                
+        if (paladinShield == true && lancelotSpear == true && guinevereHair == true && eventsCode == 99){
+            //Đếm số lượng hiệp sĩ đánh với Ultimecia (Chủ yếu để xem rằng trong đội quân có còn ai Paladin, Dragon, Lancelot)
+            int Normal_Knight_count = 0;
+            for (int i = 0; i < cap; i++){
+                if (KnightL1st[i] -> getKnightType() == NORMAL) Normal_Knight_count++;
             }
+            for (int i = cap - 1; i >= 0; i--){
+                if ((KnightL1st[i] -> getKnightType()) == PALADIN || (KnightL1st[i] -> getKnightType()) == LANCELOT || (KnightL1st[i] -> getKnightType()) == DRAGON){
+                    damage = (KnightL1st[i] -> getHP()) * (KnightL1st[i] -> getLevel()) * (KnightL1st[i] -> getBase_Dame());
+                    UltimeciaHP -= damage;
+                    if (UltimeciaHP > 0){
+                        KnightL1st = deleteKnight_Ultimecia(i);
+                    }
+                }
+            }
+            if (UltimeciaHP > 0 && cap == Normal_Knight_count){
+                KnightL1st = set_army_knight();
+                return false;
+            }
+            else return true;
+        }
+        else {
+            KnightL1st = set_army_knight();
+            return false;
         }
     }
 }
@@ -985,10 +1018,12 @@ void KnightAdventure::run(){
         armyKnights -> collectPhoenix(); //Nhặt sự kiện từ mã 112 -> 114
         armyKnights -> collectArmyItem(); //Nhặt báu vật 95 -> 98
         armyKnights -> UseItem(); //Sử dụng vật phẩm
-        armyKnights -> printInfo();
         if (i == num_of_events - 1){
+            armyKnights -> fightUltimecia();
+            armyKnights -> printInfo();
             armyKnights -> printResult(armyKnights -> adventure(events));
         }
+        else armyKnights -> printInfo();
     }
     
     

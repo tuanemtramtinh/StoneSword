@@ -427,7 +427,9 @@ public:
     void UseItem();
 
     BaseKnight * lastKnight() const;
-    void deleteFaintedLastKnight();
+    BaseKnight ** deleteFaintedLastKnight();
+    BaseKnight ** deleteKnight_Ultimecia(int index);
+    BaseKnight ** set_army_knight();
 
     bool hasPaladinShield() const;
     bool hasLancelotSpear() const;
