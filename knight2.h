@@ -123,7 +123,7 @@ public:
     ll l;
     Node * node;
     string PrintItemList;
-    int num_of_item;
+    int num_of_item = 0;
     int bag_cap_limit = 0; //Giới hạn của túi đồ 
 public:
     void CreateBagList(){
@@ -196,25 +196,19 @@ public:
 
 class LancelotBag : public BaseBag{
 public:
-    LancelotBag(){
-        this -> bag_cap_limit = 16;
-    }
+    LancelotBag();
     ~LancelotBag();
 };
 
 class DragonBag : public BaseBag{
 public:
-    DragonBag(){
-        this -> bag_cap_limit = 14;
-    }
+    DragonBag();
     ~DragonBag();
 };
 
 class NormalBag : public BaseBag{
 public:
-    NormalBag(){
-        this -> bag_cap_limit = 19;
-    }
+    NormalBag();
     ~NormalBag();
 };
 

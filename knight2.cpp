@@ -275,7 +275,7 @@ PaladinBag::PaladinBag(){
 /* * * BEGIN implementation LancelotBag * * */
 
 LancelotBag::LancelotBag(){
-
+    this -> bag_cap_limit = 16;
 }
 
 /* * * END implementation LancelotBag * * */
@@ -283,7 +283,7 @@ LancelotBag::LancelotBag(){
 /* * * BEGIN implementation DragonBag * * */
 
 DragonBag::DragonBag(){
-
+    this -> bag_cap_limit = 14;
 }
 
 /* * * END implementation DragonBag * * */
@@ -291,7 +291,7 @@ DragonBag::DragonBag(){
 /* * * BEGIN implementation NormalBag * * */
 
 NormalBag::NormalBag(){
-
+    this -> bag_cap_limit = 19;
 }
 
 /* * * END implementation NormalBag * * */
@@ -376,11 +376,17 @@ void BaseKnight::KnightBagCreate(){
         bag -> CreateBagList();
         for (int i = 0; i < phoenixdownI; i++){
             temp = new PhoenixItemI();
-            bag -> insertFirst(temp);
+            if (bag -> num_of_item < bag -> bag_cap_limit){
+                bag -> insertFirst(temp);
+                bag -> num_of_item++;
+            }
         }
         for (int i = 0; i < antidote; i++){
             temp = new AntidoteItem();
-            bag -> insertFirst(temp);
+            if (bag -> num_of_item < bag -> bag_cap_limit){
+                bag -> insertFirst(temp);
+                bag -> num_of_item++;
+            }
         }
     }
     else if((this -> knightType) == LANCELOT){
@@ -388,11 +394,17 @@ void BaseKnight::KnightBagCreate(){
         bag -> CreateBagList();
         for (int i = 0; i < phoenixdownI; i++){
             temp = new PhoenixItemI();
-            bag -> insertFirst(temp);
+            if (bag -> num_of_item < bag -> bag_cap_limit){
+                bag -> insertFirst(temp);
+                bag -> num_of_item++;
+            }
         }
         for (int i = 0; i < antidote; i++){
             temp = new AntidoteItem();
-            bag -> insertFirst(temp);
+            if (bag -> num_of_item < bag -> bag_cap_limit){
+                bag -> insertFirst(temp);
+                bag -> num_of_item++;
+            }
         }
     }
     else if ((this -> knightType) == DRAGON){
@@ -400,7 +412,10 @@ void BaseKnight::KnightBagCreate(){
         bag -> CreateBagList();
         for (int i = 0; i < phoenixdownI; i++){
             temp = new PhoenixItemI();
-            bag -> insertFirst(temp);
+            if (bag -> num_of_item < bag -> bag_cap_limit){
+                bag -> insertFirst(temp);
+                bag -> num_of_item++;
+            }
         }
         //Do DRAGON không cần lấy Antidote
     }
@@ -409,14 +424,20 @@ void BaseKnight::KnightBagCreate(){
         bag -> CreateBagList();
         for (int i = 0; i < phoenixdownI; i++){
             temp = new PhoenixItemI();
-            bag -> insertFirst(temp);
+            if (bag -> num_of_item < bag -> bag_cap_limit){
+                bag -> insertFirst(temp);
+                bag -> num_of_item++;
+            }
         }
         for (int i = 0; i < antidote; i++){
             temp = new AntidoteItem();
-            bag -> insertFirst(temp);
+            if (bag -> num_of_item < bag -> bag_cap_limit){
+                bag -> insertFirst(temp);
+                bag -> num_of_item++;
+            }
         }
     }
-    bag -> num_of_item = phoenixdownI + antidote;
+    //bag -> num_of_item = phoenixdownI + antidote;
     //delete temp;
 }
 
@@ -998,7 +1019,8 @@ void KnightAdventure::run(){
         armyKnights -> pass_gil_to_previous(); //Truyền gil cho hiệp sĩ trước và đồng thời set lại gil
         armyKnights -> collectPhoenix(); //Nhặt sự kiện từ mã 112 -> 114
         armyKnights -> collectArmyItem(); //Nhặt báu vật 95 -> 98
-        armyKnights -> UseItem(); //Sử dụng vật phẩm
+        if (events -> get(i) != 112 && events -> get(i) != 113 && events -> get(i) != 114)
+            armyKnights -> UseItem(); //Sử dụng vật phẩm
         if (i == num_of_events - 1){
             armyKnights -> fightUltimecia();
             armyKnights -> printInfo();
