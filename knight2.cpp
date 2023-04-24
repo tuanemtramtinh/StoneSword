@@ -376,17 +376,13 @@ void BaseKnight::KnightBagCreate(){
         bag -> CreateBagList();
         for (int i = 0; i < phoenixdownI; i++){
             temp = new PhoenixItemI();
-            if (bag -> num_of_item < bag -> bag_cap_limit){
-                bag -> insertFirst(temp);
-                bag -> num_of_item++;
-            }
+            bag -> insertFirst(temp);
+            bag -> num_of_item++;
         }
         for (int i = 0; i < antidote; i++){
             temp = new AntidoteItem();
-            if (bag -> num_of_item < bag -> bag_cap_limit){
-                bag -> insertFirst(temp);
-                bag -> num_of_item++;
-            }
+            bag -> insertFirst(temp);
+            bag -> num_of_item++;
         }
     }
     else if((this -> knightType) == LANCELOT){
@@ -771,18 +767,23 @@ BaseKnight** ArmyKnights::deleteFaintedLastKnight(){
     return KnightL1st;
 }
 
-BaseKnight** ArmyKnights::deleteKnight_Ultimecia(int index){
+void ArmyKnights::deleteKnight_Ultimecia(int index){
     BaseKnight ** tempKnightList = new BaseKnight* [cap - 1];
+    //cout << index << " ";
+    /*for (int i = 0; i < cap; i++){
+        cout << KnightL1st[i] -> getKnightType() << " "; 
+    }*/
+    cout << endl;
     for (int i = index; i < cap - 1; i++){
         KnightL1st[i] = KnightL1st[i + 1];
     }
     for (int i = 0; i < cap - 1; i++){
-        tempKnightList[i] = tempKnightList[i + 1];
+        tempKnightList[i] = KnightL1st[i];
     }
+    
     delete [] KnightL1st;
     KnightL1st = tempKnightList;
     cap--;
-    return KnightL1st;
 }
 
 //----------------------------------------
@@ -939,9 +940,10 @@ bool ArmyKnights::fightUltimecia(){
             for (int i = cap - 1; i >= 0; i--){
                 if ((KnightL1st[i] -> getKnightType()) == PALADIN || (KnightL1st[i] -> getKnightType()) == LANCELOT || (KnightL1st[i] -> getKnightType()) == DRAGON){
                     damage = (KnightL1st[i] -> getHP()) * (KnightL1st[i] -> getLevel()) * (KnightL1st[i] -> getBase_Dame());
+                    cout << damage << " ";
                     UltimeciaHP -= damage;
                     if (UltimeciaHP > 0){
-                        KnightL1st = deleteKnight_Ultimecia(i);
+                        deleteKnight_Ultimecia(i);
                     }
                 }
             }

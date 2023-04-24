@@ -221,7 +221,6 @@ public:
     int gilValue;
     OpponentType opponentType;
 public:
-    void levelCalculate(int eventsID, int events_order);
     BaseOpponent * OpponentCreate(int eventsID, int events_order);
 };
 
@@ -325,7 +324,7 @@ protected:
     int gil;
     int antidote;
     int phoenixdownI;
-    double base_dame;
+    double base_dame = 0;
     int left_over_gil = 0; //Tiền bị dư ra khi mà gil đạt 999
     BaseBag * bag;
     KnightType knightType;
@@ -429,7 +428,7 @@ public:
 
     BaseKnight * lastKnight() const;
     BaseKnight ** deleteFaintedLastKnight();
-    BaseKnight ** deleteKnight_Ultimecia(int index);
+    void deleteKnight_Ultimecia(int index);
     BaseKnight ** set_army_knight();
 
     bool hasPaladinShield() const;
