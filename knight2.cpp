@@ -5,7 +5,7 @@
 bool PaladinCheck(int x){
     if (x == 0 || x == 1) return false;
     for (int i = 2; i <= sqrt(x); i++){
-        if (i % 2 == 0) return false;
+        if (x % i == 0) return false;
     }
     return true;
 }
@@ -174,15 +174,19 @@ bool BaseBag::insertFirst(BaseItem * item){
     newNode -> data = item;
     newNode -> next = nullptr;
     this -> node = newNode;
-    if (l.head == nullptr){
-        l.head = this -> node;
-        l.tail = nullptr;
-    }
-    else{
-        node -> next = l.head;
-        l.head = node;
-    }
-    return true;
+    if ((num_of_item < bag_cap_limit && bag_cap_limit != 0) || bag_cap_limit == 0){
+        if (l.head == nullptr){
+            l.head = this -> node;
+            l.tail = nullptr;
+        }
+        else{
+            node -> next = l.head;
+            l.head = node;
+        }
+        num_of_item++;
+        return true;
+    }   
+    else return false;
 }
 
 //Tìm vật phẩm ở trong túi của Hiệp Sĩ
@@ -377,12 +381,10 @@ void BaseKnight::KnightBagCreate(){
         for (int i = 0; i < phoenixdownI; i++){
             temp = new PhoenixItemI();
             bag -> insertFirst(temp);
-            bag -> num_of_item++;
         }
         for (int i = 0; i < antidote; i++){
             temp = new AntidoteItem();
             bag -> insertFirst(temp);
-            bag -> num_of_item++;
         }
     }
     else if((this -> knightType) == LANCELOT){
@@ -392,14 +394,12 @@ void BaseKnight::KnightBagCreate(){
             temp = new PhoenixItemI();
             if (bag -> num_of_item < bag -> bag_cap_limit){
                 bag -> insertFirst(temp);
-                bag -> num_of_item++;
             }
         }
         for (int i = 0; i < antidote; i++){
             temp = new AntidoteItem();
             if (bag -> num_of_item < bag -> bag_cap_limit){
                 bag -> insertFirst(temp);
-                bag -> num_of_item++;
             }
         }
     }
@@ -410,7 +410,6 @@ void BaseKnight::KnightBagCreate(){
             temp = new PhoenixItemI();
             if (bag -> num_of_item < bag -> bag_cap_limit){
                 bag -> insertFirst(temp);
-                bag -> num_of_item++;
             }
         }
         //Do DRAGON không cần lấy Antidote
@@ -422,14 +421,12 @@ void BaseKnight::KnightBagCreate(){
             temp = new PhoenixItemI();
             if (bag -> num_of_item < bag -> bag_cap_limit){
                 bag -> insertFirst(temp);
-                bag -> num_of_item++;
             }
         }
         for (int i = 0; i < antidote; i++){
             temp = new AntidoteItem();
             if (bag -> num_of_item < bag -> bag_cap_limit){
                 bag -> insertFirst(temp);
-                bag -> num_of_item++;
             }
         }
     }
@@ -607,7 +604,6 @@ void PaladinKnight::fight(BaseOpponent * opponent){
     else if (MonsterType == 7) fightQueenofCards(opponent);
     else if (MonsterType == NINADERINGS) fightNinaDeRings();
     else if (MonsterType == DURIANGARDEN) fightDurianGarden();
-    else if (MonsterType == OMEGAWEAPON) fightOmegaWeapon();
 }
 
 /* * * END implementation of class PaladinKnight * * */
@@ -644,7 +640,6 @@ void LancelotKnight::fight(BaseOpponent * opponent){
     else if (MonsterType == 7) fightQueenofCards(opponent);
     else if (MonsterType == NINADERINGS) fightNinaDeRings();
     else if (MonsterType == DURIANGARDEN) fightDurianGarden();
-    else if (MonsterType == OMEGAWEAPON) fightOmegaWeapon();
 }
 
 /* * * END implementation of class LancelotKnight * * */
@@ -686,7 +681,6 @@ void DragonKnight::fight(BaseOpponent * opponent){
     else if (MonsterType == 7) fightQueenofCards(opponent);
     else if (MonsterType == NINADERINGS) fightNinaDeRings();
     else if (MonsterType == DURIANGARDEN) fightDurianGarden();
-    else if (MonsterType == OMEGAWEAPON) fightOmegaWeapon();
 }
 
 /* * * END implementation of class DragonKnight * * */
@@ -726,7 +720,6 @@ void NormalKnight::fight(BaseOpponent * opponent){
     else if (MonsterType == 7) fightQueenofCards(opponent);
     else if (MonsterType == NINADERINGS) fightNinaDeRings();
     else if (MonsterType == DURIANGARDEN) fightDurianGarden();
-    else if (MonsterType == OMEGAWEAPON) fightOmegaWeapon();
 }
 
 /* * * END implementation of class NormalKnight * * */
@@ -773,7 +766,7 @@ void ArmyKnights::deleteKnight_Ultimecia(int index){
     /*for (int i = 0; i < cap; i++){
         cout << KnightL1st[i] -> getKnightType() << " "; 
     }*/
-    cout << endl;
+    //cout << endl;
     for (int i = index; i < cap - 1; i++){
         KnightL1st[i] = KnightL1st[i + 1];
     }
@@ -803,23 +796,32 @@ bool ArmyKnights::adventure(Events * events){
 }
 
 void ArmyKnights::collectPhoenix(){
-    BaseKnight * lk9 = lastKnight();
-    BaseBag * tempBag = lk9 -> getBag();
     BaseItem * tempItem;
-    if (eventsCode == 112){
-        tempItem = new PhoenixItemII();
-        tempBag -> insertFirst(tempItem);
-        tempBag -> num_of_item ++;
-    }
-    else if (eventsCode == 113){
-        tempItem = new PhoenixItemIII();
-        tempBag -> insertFirst(tempItem);
-        tempBag -> num_of_item ++;
-    }
-    else if (eventsCode == 114){
-        tempItem = new PhoenixItemIV();
-        tempBag -> insertFirst(tempItem);
-        tempBag -> num_of_item ++;
+    for (int i = cap - 1; i >= 0; i--){
+        if (eventsCode == 112){
+            tempItem = new PhoenixItemII();
+            if (((KnightL1st[i] -> getBag() -> num_of_item < KnightL1st[i] -> getBag() -> bag_cap_limit) && KnightL1st[i] -> getBag() -> bag_cap_limit != 0)
+                || KnightL1st[i] -> getKnightType() == PALADIN){
+                KnightL1st[i] -> getBag() -> insertFirst(tempItem);
+                break;
+            }
+        }
+        else if (eventsCode == 113){
+            tempItem = new PhoenixItemIII();
+            if (((KnightL1st[i] -> getBag() -> num_of_item < KnightL1st[i] -> getBag() -> bag_cap_limit) && KnightL1st[i] -> getBag() -> bag_cap_limit != 0)
+                || KnightL1st[i] -> getKnightType() == PALADIN){
+                KnightL1st[i] -> getBag() -> insertFirst(tempItem);
+                break;
+            }
+        }
+        else if (eventsCode == 114){
+            tempItem = new PhoenixItemIV();
+            if (((KnightL1st[i] -> getBag() -> num_of_item < KnightL1st[i] -> getBag() -> bag_cap_limit) && KnightL1st[i] -> getBag() -> bag_cap_limit != 0)
+                || KnightL1st[i] -> getKnightType() == PALADIN){
+                KnightL1st[i] -> getBag() -> insertFirst(tempItem);
+                break;
+            }
+        }
     }
 }
 
@@ -911,23 +913,46 @@ bool ArmyKnights::fight(BaseOpponent * opponent){
 }
 
 void ArmyKnights::fightHades(){
-    for (int i = cap - 1; i >= 0; i--){
-        if ((KnightL1st[i] -> getLevel() == 10) || ((KnightL1st[i] -> getLevel()) == 8 && (KnightL1st[i] -> getKnightType()) == PALADIN)){
-            if (paladinShield == false) paladinShield = true;
+    if (hades_meet == false){
+        for (int i = cap - 1; i >= 0; i--){
+            if ((KnightL1st[i] -> getLevel() == 10) || ((KnightL1st[i] -> getLevel()) == 8 && (KnightL1st[i] -> getKnightType()) == PALADIN)){
+                if (paladinShield == false) paladinShield = true;
+                hades_meet = true;
+            }
+            else KnightL1st[i] -> HPModify(0);
+            if (KnightL1st[i] -> getHP() <= 0){
+            UseItem();
+                if (KnightL1st[i] -> getHP() > 0) break;
+                else if (KnightL1st[i] -> getHP() <= 0)
+                    KnightL1st = deleteFaintedLastKnight(); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi 
+            }
+            else break;
         }
-        else KnightL1st[i] -> HPModify(0);
-        if (KnightL1st[i] -> getHP() <= 0){
-           UseItem();
-            if (KnightL1st[i] -> getHP() > 0) break;
-            else if (KnightL1st[i] -> getHP() <= 0)
-                KnightL1st = deleteFaintedLastKnight(); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi 
+    }
+}
+
+void ArmyKnights::fightOmega(){
+    if (omega_meet == false){
+        for (int i = cap - 1; i >= 0; i--){
+            if (((KnightL1st[i] -> getLevel() == 10) && (KnightL1st[i] -> getHP() == KnightL1st[i] -> getMaxhp())) || KnightL1st[i] -> getKnightType() == DRAGON){
+                KnightL1st[i] -> levelSet(10);
+                KnightL1st[i] -> gilSet(999);
+                omega_meet = true;
+            }
+            else KnightL1st[i] -> HPModify(0);
+            if (KnightL1st[i] -> getHP() <= 0){
+                UseItem();
+                if (KnightL1st[i] -> getHP() > 0) break;
+                else if (KnightL1st[i] -> getHP() <= 0)
+                    KnightL1st = deleteFaintedLastKnight(); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi 
+            }
+            else break;
         }
-        else break;
     }
 }
 
 bool ArmyKnights::fightUltimecia(){
-    int UltimeciaHP = 5000;
+    static int UltimeciaHP = 5000;
     int damage = 0;
     if (excaliburSword == true && eventsCode == 99) return true;
     else{
@@ -940,7 +965,6 @@ bool ArmyKnights::fightUltimecia(){
             for (int i = cap - 1; i >= 0; i--){
                 if ((KnightL1st[i] -> getKnightType()) == PALADIN || (KnightL1st[i] -> getKnightType()) == LANCELOT || (KnightL1st[i] -> getKnightType()) == DRAGON){
                     damage = (KnightL1st[i] -> getHP()) * (KnightL1st[i] -> getLevel()) * (KnightL1st[i] -> getBase_Dame());
-                    cout << damage << " ";
                     UltimeciaHP -= damage;
                     if (UltimeciaHP > 0){
                         deleteKnight_Ultimecia(i);
@@ -1002,21 +1026,22 @@ void KnightAdventure::run(){
     int num_of_events = events -> count();
     opponent = new BaseOpponent;
     BaseOpponent * temp = opponent;
-    bool OmegaWeapon_meet = false, Hades_meet = false;
+    //bool OmegaWeapon_meet = false, Hades_meet = false;
     for (int i = 0; i < num_of_events; i++){
         events -> substituteID(i); //Lấy thứ tự i của chuỗi events
         armyKnights -> eventsCode = events -> get(i); //Lấy mã sự kiện của sự kiện thứ i
         if ((events -> get(i)) >= 1 && (events -> get(i)) <= 11){
-            if ((events -> get(i)) == 11 && Hades_meet == false){
+            if ((events -> get(i)) == 11){
                 armyKnights -> fightHades();
-                Hades_meet = true;
+                //Hades_meet = true;
             }
             else{
-                if ((events -> get(i)) == 10 && OmegaWeapon_meet == false){
-                    opponent = opponent -> OpponentCreate(events -> get(i), i);
+                if ((events -> get(i)) == 10){
+                    armyKnights -> fightOmega();
+                    //opponent = opponent -> OpponentCreate(events -> get(i), i);
                     //cout << opponent -> opponentType;
-                    armyKnights -> fight(opponent);
-                    OmegaWeapon_meet = true;
+                    //armyKnights -> fight(opponent);
+                    //OmegaWeapon_meet = true;
                 }
                 else {
                     opponent = opponent -> OpponentCreate(events -> get(i), i);
@@ -1035,6 +1060,10 @@ void KnightAdventure::run(){
         if (i == num_of_events - 1){
             armyKnights -> fightUltimecia();
             armyKnights -> printInfo();
+            /*for (int i = 0; i < armyKnights -> cap; i++){
+                armyKnights -> KnightL1st[i] -> getBag() -> PrintBagListTemp();
+                cout << endl;
+            }*/
             armyKnights -> printResult(armyKnights -> adventure(events));
         }
         else armyKnights -> printInfo();

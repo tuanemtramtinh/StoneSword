@@ -360,6 +360,10 @@ public:
     void left_over_gil_set(int x){
         this -> left_over_gil = x;
     }
+    //Set số lượng level
+    void levelSet(int x){
+        this -> level = x;
+    }
 
     virtual void fight(BaseOpponent * opponent) = 0;
     void fightTornbey(BaseOpponent * opponent);
@@ -411,9 +415,9 @@ class ArmyKnights {
 public:
     int cap;
     int eventsCode;
-    bool paladinShield = false, lancelotSpear = false, guinevereHair = false, excaliburSword = false;
     BaseKnight ** KnightL1st; // Vì method Create trong class BaseKnight return về địa chỉ
-
+    bool paladinShield = false, lancelotSpear = false, guinevereHair = false, excaliburSword = false;
+    bool hades_meet = false, omega_meet = false;
 public:
     ArmyKnights (const string & file_armyknights);
     ~ArmyKnights();
@@ -422,6 +426,7 @@ public:
     bool adventure (Events * events);
     bool fightUltimecia();
     void fightHades();
+    void fightOmega();
     int count() const;
     
     void UseItem();
