@@ -433,7 +433,8 @@ public:
 
     BaseKnight * lastKnight() const;
     BaseKnight ** deleteFaintedLastKnight();
-    void deleteKnight_Ultimecia(int index);
+    void deleteKnight(int index);
+    void deleteKnightTemp(int index);
     BaseKnight ** set_army_knight();
 
     bool hasPaladinShield() const;
