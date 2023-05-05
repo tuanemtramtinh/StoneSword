@@ -920,7 +920,11 @@ bool ArmyKnights::fight(BaseOpponent * opponent){
         //Cho hiệp sĩ cuối đánh với quái trước
         if (KnightL1st[i] -> getHP() <= 0){ 
             UseItem();
-            if (KnightL1st[i] -> getHP() > 0) break;
+            if (KnightL1st[i] -> getHP() > 0){
+                //Thêm một biến kiểm tra hồi sinh nếu hồi sinh thì biến thành true
+                reviveCheck = true;
+                break;
+            }
             else if (KnightL1st[i] -> getHP() <= 0)
                 deleteKnight(i); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi
         }
@@ -945,7 +949,10 @@ void ArmyKnights::fightHades(){
             }
             if (KnightL1st[i] -> getHP() <= 0){
                 UseItem();
-                if (KnightL1st[i] -> getHP() > 0) break;
+                if (KnightL1st[i] -> getHP() > 0){
+                    reviveCheck = true;
+                    break;
+                }
                 else if (KnightL1st[i] -> getHP() <= 0)
                     deleteKnight(i); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi 
             }
@@ -965,7 +972,10 @@ void ArmyKnights::fightOmega(){
             else KnightL1st[i] -> HPModify(0);
             if (KnightL1st[i] -> getHP() <= 0){
                 UseItem();
-                if (KnightL1st[i] -> getHP() > 0) break;
+                if (KnightL1st[i] -> getHP() > 0){
+                    reviveCheck = true;
+                    break;
+                }
                 else if (KnightL1st[i] -> getHP() <= 0){
                     deleteKnight(i); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi 
                 }
@@ -1081,9 +1091,10 @@ void KnightAdventure::run(){
         armyKnights -> pass_gil_to_previous(); //Truyền gil cho hiệp sĩ trước và đồng thời set lại gil
         armyKnights -> collectPhoenix(); //Nhặt sự kiện từ mã 112 -> 114
         armyKnights -> collectArmyItem(); //Nhặt báu vật 95 -> 98
-        if (events -> get(i) != 112 && events -> get(i) != 113 && events -> get(i) != 114){
+        if ((events -> get(i) != 112 && events -> get(i) != 113 && events -> get(i) != 114) || armyKnights -> reviveCheck == false){
             armyKnights -> UseItem(); //Sử dụng vật phẩm
         }
+        if (armyKnights -> reviveCheck == true) armyKnights -> reviveCheck = false;
         armyKnights -> printInfo();
     }
 }

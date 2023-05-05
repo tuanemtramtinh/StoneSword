@@ -418,6 +418,7 @@ public:
     BaseKnight ** KnightL1st; // Vì method Create trong class BaseKnight return về địa chỉ
     bool paladinShield = false, lancelotSpear = false, guinevereHair = false, excaliburSword = false;
     bool hades_meet = false, omega_meet = false;
+    bool reviveCheck = false;
 public:
     ArmyKnights (const string & file_armyknights);
     ~ArmyKnights();
