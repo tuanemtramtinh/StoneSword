@@ -50,6 +50,7 @@ Events::Events(const string& file_Events){
     for (int  i = 0; i < num; i++){
         s2 >> events[i];
     }
+    infile.close();
 }
 
 int Events::count() const{
@@ -186,7 +187,7 @@ bool BaseBag::insertFirst(BaseItem * item){
         }
         num_of_item++;
         return true;
-    }   
+    }
     else return false;
 }
 
@@ -255,9 +256,9 @@ void BaseBag::remove_antidote_effect(){
             l.head = node;
             num_of_item--;
             delete temp;
-        }   
+        }
     }
-    
+
 
 }
 
@@ -265,7 +266,7 @@ void BaseBag::remove_antidote_effect(){
 string BaseBag::toString() const{
     string typeString[5] = {"PhoenixI", "PhoenixII", "PhoenixIII", "PhoenixIV", "Antidote"};
     string s("");
-    
+
     s = s + "Bag[count=" + to_string(num_of_item) + ";" + PrintItemList + "]";
     return s;
 }
@@ -338,7 +339,7 @@ BaseOpponent * BaseOpponent::OpponentCreate(int eventsID, int events_order){
         x -> levelO = this -> levelO;
     }
     else if (eventsID == 8){
-        x = new NinaDeRings();  
+        x = new NinaDeRings();
     }
     else if (eventsID == 9){
         x = new DurianGarden();
@@ -542,6 +543,7 @@ void BaseKnight::fightNinaDeRings(){
             gil -= 50;
         HPinc = hp + maxhp/5;
         HPModify(HPinc);
+        if (hp > maxhp) hp = maxhp;
     }
 }
 
@@ -565,14 +567,14 @@ string BaseKnight::toString() const {
     //      but the format output must be the same
     string s("");
     bag -> PrintBagList();
-    s += "[Knight:id:" + to_string(id) 
-        + ",hp:" + to_string(hp) 
-        + ",maxhp:" + to_string(maxhp)
-        + ",level:" + to_string(level)
-        + ",gil:" + to_string(gil)
-        + "," + bag->toString()
-        + ",knight_type:" + typeString[knightType]
-        + "]";
+    s += "[Knight:id:" + to_string(id)
+         + ",hp:" + to_string(hp)
+         + ",maxhp:" + to_string(maxhp)
+         + ",level:" + to_string(level)
+         + ",gil:" + to_string(gil)
+         + "," + bag->toString()
+         + ",knight_type:" + typeString[knightType]
+         + "]";
     return s;
 }
 
@@ -677,7 +679,7 @@ void DragonKnight::fight(BaseOpponent * opponent){
     OpponentType MonsterType = opponent -> opponentType;
     if (MonsterType >= 1 && MonsterType <= 5){
         if (level < (opponent -> levelO)){
-        hp = hp - (opponent -> baseDamage) * ((opponent -> levelO) - level);
+            hp = hp - (opponent -> baseDamage) * ((opponent -> levelO) - level);
         }
         else{
             gil = gil + (opponent -> gilValue);
@@ -716,7 +718,7 @@ void NormalKnight::fight(BaseOpponent * opponent){
     OpponentType MonsterType = opponent -> opponentType;
     if (MonsterType >= 1 && MonsterType <= 5){
         if (level < (opponent -> levelO)){
-        hp = hp - (opponent -> baseDamage) * ((opponent -> levelO) - level);
+            hp = hp - (opponent -> baseDamage) * ((opponent -> levelO) - level);
         }
         else{
             gil = gil + (opponent -> gilValue);
@@ -751,7 +753,7 @@ ArmyKnights::ArmyKnights (const string & file_armyknights){
         KnightL1st[i] -> KnightBagCreate();
     }
     cap = n;
-
+    infile.close();
 }
 
 ArmyKnights::~ArmyKnights(){
@@ -761,44 +763,16 @@ ArmyKnights::~ArmyKnights(){
 void ArmyKnights::deleteKnight(int index){
     if (cap > 0){
         BaseKnight ** tempKnightList = new BaseKnight* [cap - 1];
-            for (int i = index; i < cap - 1; i++){
-                KnightL1st[i] = KnightL1st[i + 1];
-            }
-            for (int i = 0; i < cap - 1; i++){
-                tempKnightList[i] = KnightL1st[i];
-            }
-        /*else{
-            for (int i = 0; i < cap - 1; i++){
-                tempKnightList[i] = KnightL1st[i];
-            }
-        }*/
+        for (int i = index; i < cap - 1; i++){
+            KnightL1st[i] = KnightL1st[i + 1];
+        }
+        for (int i = 0; i < cap - 1; i++){
+            tempKnightList[i] = KnightL1st[i];
+        }
         delete [] KnightL1st;
         KnightL1st = tempKnightList;
-        //tempKnightList = nullptr;
         cap--;
     }
-}
-
-void ArmyKnights::deleteKnightTemp(int index){
-    cout << cap;
-    /*if (cap > 0){
-        BaseKnight ** tempKnightList = new BaseKnight* [cap - 1];
-            for (int i = index; i < cap - 1; i++){
-                KnightL1st[i] = KnightL1st[i + 1];
-            }
-            for (int i = 0; i < cap - 1; i++){
-                tempKnightList[i] = KnightL1st[i];
-            }
-        else{
-            for (int i = 0; i < cap - 1; i++){
-                tempKnightList[i] = KnightL1st[i];
-            }
-        }
-        //delete [] KnightL1st;
-        //KnightL1st = tempKnightList;
-        //tempKnightList = nullptr;
-        //cap--;
-    }*/
 }
 
 //----------------------------------------
@@ -812,8 +786,8 @@ BaseKnight ** ArmyKnights::set_army_knight(){
 }
 
 bool ArmyKnights::adventure(Events * events){
+    if (cap > 0) return true;
     if ((this -> fightUltimecia()) == true) return true;
-    if (cap < 0) return false;
     return false;
 }
 
@@ -850,6 +824,7 @@ void ArmyKnights::collectPhoenix(){
 void ArmyKnights::UseItem(){
     BaseKnight * lk9 = lastKnight();
     lk9 -> UseItemKnight();
+    if (lk9 -> getHP() > lk9 -> getMaxhp()) lk9 ->HPModify(lk9 -> getMaxhp());
     lk9 -> GilRevive();
 }
 
@@ -911,14 +886,14 @@ BaseKnight * ArmyKnights::lastKnight() const{
 }
 
 int ArmyKnights::count() const{
-    return cap;
+    return this -> cap;
 }
 
 bool ArmyKnights::fight(BaseOpponent * opponent){
-    for (int i = cap - 1; i >= 0; i--){
+    /*for (int i = cap - 1; i >= 0; i--){
         KnightL1st[i] -> fight(opponent);
         //Cho hiệp sĩ cuối đánh với quái trước
-        if (KnightL1st[i] -> getHP() <= 0){ 
+        if (KnightL1st[i] -> getHP() <= 0){
             UseItem();
             if (KnightL1st[i] -> getHP() > 0){
                 //Thêm một biến kiểm tra hồi sinh nếu hồi sinh thì biến thành true
@@ -927,17 +902,37 @@ bool ArmyKnights::fight(BaseOpponent * opponent){
             }
             else if (KnightL1st[i] -> getHP() <= 0)
                 deleteKnight(i); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi
+                break;
         }
         else break;
+    }*/
+    BaseKnight * lk9 = lastKnight();
+    lk9 -> fight(opponent);
+    if (lk9 -> getHP() <= 0){
+        UseItem();
+        if (lk9 -> getHP() > 0) reviveCheck = true;
+        else if (lk9 -> getHP() <= 0) deleteKnight(cap - 1);
     }
     if (cap == 0) return false;
     return true;
 }
 
 void ArmyKnights::fightHades(){
-    
+
     if (hades_meet == false){
-        for (int i = cap - 1; i >= 0; i--){
+        BaseKnight * lk9 = lastKnight();
+        if (lk9 -> getLevel() == 10 || (lk9 -> getLevel() == 8 && lk9 -> getKnightType() == PALADIN)){
+            if (paladinShield == false) paladinShield = true;
+            hades_meet = true;
+        }
+        else lk9 -> HPModify(0);
+        if (lk9 -> getHP() <= 0){
+            UseItem();
+            if (lk9 -> getHP() > 0) reviveCheck = true;
+            else if (lk9 -> getHP() <= 0) deleteKnight(cap - 1);
+        }
+
+        /*for (int i = cap - 1; i >= 0; i--){
             if ((KnightL1st[i] -> getLevel() == 10) || ((KnightL1st[i] -> getLevel()) == 8 && (KnightL1st[i] -> getKnightType()) == PALADIN)){
                 //cout << "Hello";
                 if (paladinShield == false) paladinShield = true;
@@ -954,16 +949,29 @@ void ArmyKnights::fightHades(){
                     break;
                 }
                 else if (KnightL1st[i] -> getHP() <= 0)
-                    deleteKnight(i); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi 
+                    deleteKnight(i);//Nếu hiệp sĩ chết thì xoá hiệp sĩ đi
+                    break;
             }
             else break;
-        }
+        }*/
     }
 }
 
 void ArmyKnights::fightOmega(){
     if (omega_meet == false){
-        for (int i = cap - 1; i >= 0; i--){
+        BaseKnight * lk9 = lastKnight();
+        if ((lk9 -> getLevel() == 10 && lk9 -> getHP() == lk9 -> getMaxhp()) || lk9 -> getKnightType() == DRAGON){
+            lk9 -> levelSet(10);
+            lk9 -> gilSet(999);
+            omega_meet = true;
+        }
+        else lk9 -> HPModify(0);
+        if (lk9 -> getHP() <= 0){
+            UseItem();
+            if (lk9 -> getHP() > 0) reviveCheck = true;
+            else if (lk9 -> getHP() <= 0) deleteKnight(cap - 1);
+        }
+        /*for (int i = cap - 1; i >= 0; i--){
             if (((KnightL1st[i] -> getLevel() == 10) && (KnightL1st[i] -> getHP() == KnightL1st[i] -> getMaxhp())) || KnightL1st[i] -> getKnightType() == DRAGON){
                 KnightL1st[i] -> levelSet(10);
                 KnightL1st[i] -> gilSet(999);
@@ -977,11 +985,12 @@ void ArmyKnights::fightOmega(){
                     break;
                 }
                 else if (KnightL1st[i] -> getHP() <= 0){
-                    deleteKnight(i); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi 
+                    deleteKnight(i); //Nếu hiệp sĩ chết thì xoá hiệp sĩ đi
+                    break; //Cần hỏi lại
                 }
             }
             else break;
-        }
+        }*/
     }
 }
 
@@ -1018,18 +1027,42 @@ bool ArmyKnights::fightUltimecia(){
     }
 }
 
+/*void ArmyKnights::printInfo() const {
+    if (cap > 0) {
+        cout << "No. knights: " << this->count();
+        if (this->count() > 0) {
+            BaseKnight *lknight = lastKnight(); // last knight
+            cout << ";" << lknight->toString();
+        }
+        cout << ";PaladinShield:" << this->hasPaladinShield()
+             << ";LancelotSpear:" << this->hasLancelotSpear()
+             << ";GuinevereHair:" << this->hasGuinevereHair()
+             << ";ExcaliburSword:" << this->hasExcaliburSword()
+             << endl
+             << string(50, '-') << endl;
+    }
+    else {
+        cout << "No. knights: " << cap
+             <<";PaladinShield:" << this -> hasPaladinShield()
+             <<";LancelotSpear:" << this -> hasLancelotSpear()
+             << ";GuinevereHair:" << this -> hasGuinevereHair()
+             << ";ExcaliburSword:" << this -> hasExcaliburSword()
+             << endl << string(50, '-') << endl;
+    }
+}*/
+
 void ArmyKnights::printInfo() const {
     cout << "No. knights: " << this->count();
     if (this->count() > 0) {
-        BaseKnight * lknight = lastKnight(); // last knight
+        BaseKnight * lknight = lastKnight(); // last knight//
         cout << ";" << lknight->toString();
     }
     cout << ";PaladinShield:" << this->hasPaladinShield()
-        << ";LancelotSpear:" << this->hasLancelotSpear()
-        << ";GuinevereHair:" << this->hasGuinevereHair()
-        << ";ExcaliburSword:" << this->hasExcaliburSword()
-        << endl
-        << string(50, '-') << endl;
+         << ";LancelotSpear:" << this->hasLancelotSpear()
+         << ";GuinevereHair:" << this->hasGuinevereHair()
+         << ";ExcaliburSword:" << this->hasExcaliburSword()
+         << endl
+         << string(50, '-') << endl;
 }
 
 void ArmyKnights::printResult(bool win) const {
@@ -1082,22 +1115,25 @@ void KnightAdventure::run(){
             armyKnights -> printResult(armyKnights -> adventure(events));
             break;
         }
-        if (i == num_of_events - 1){
-            armyKnights -> fightUltimecia();
-            armyKnights -> printInfo();
-            armyKnights -> printResult(armyKnights -> adventure(events));
-            break;
-        }
         armyKnights -> pass_gil_to_previous(); //Truyền gil cho hiệp sĩ trước và đồng thời set lại gil
         armyKnights -> collectPhoenix(); //Nhặt sự kiện từ mã 112 -> 114
         armyKnights -> collectArmyItem(); //Nhặt báu vật 95 -> 98
-        if ((events -> get(i) != 112 && events -> get(i) != 113 && events -> get(i) != 114) || armyKnights -> reviveCheck == false){
+        if (events -> get(i) != 112 && events -> get(i) != 113 && events -> get(i) != 114 && events -> get(i) != 95 && events -> get(i) != 96 && events -> get(i) != 97 && events -> get(i) != 98 && events -> get(i) != 99 && armyKnights -> reviveCheck == false){
             armyKnights -> UseItem(); //Sử dụng vật phẩm
         }
         if (armyKnights -> reviveCheck == true) armyKnights -> reviveCheck = false;
+        if (i == num_of_events - 1){
+            if (events -> get(i) == 99){
+                armyKnights -> fightUltimecia();
+                armyKnights -> printInfo();
+            }
+            else armyKnights -> printInfo();
+            armyKnights -> printResult(armyKnights -> adventure(events));
+            break;
+        }
         armyKnights -> printInfo();
     }
 }
 
 
-/* * * END implementation of class KnightAdventure * * */   
+/* * * END implementation of class KnightAdventure * * */
